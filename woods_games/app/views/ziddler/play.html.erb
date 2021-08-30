@@ -1,0 +1,11 @@
+<script>
+    window.gameId = "<%= @game.id %>";
+    window.gamePath = "<%= @game_path %>"
+    window.rootPath = "<%= @root_path %>"
+    window.notificationPath = "<%= asset_path("notification_bow.mp3") %>"
+    window.csw15Path = "<%= asset_path("csw15.txt") %>"
+
+    window.bonus_wordlist = "<%= asset_path("#{@game.data['settings']['bonus_words']}.txt") %>"
+</script>
+<%= stylesheet_pack_tag 'ziddler_app' %>
+<%= javascript_pack_tag 'ziddler_app' %>

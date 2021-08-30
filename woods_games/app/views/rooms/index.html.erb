@@ -1,0 +1,22 @@
+<title>Game Rooms</title>
+<h1>Game Rooms</h1>
+<p> Enter the room's name and password and you'll be able to join active games or create new ones.</p>
+<%= form_tag(rooms_join_path, multipart: true) do %>
+  <div class="field">
+    <%= label_tag :name %>
+    <%= text_field_tag "room[id]"%>
+  </div>
+
+  <div class="field">
+    <%= label_tag :passphrase %>
+    <%= text_field_tag "room[passphrase]" %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag("Join") %>
+  </div>
+<% end %>
+
+<div>
+  <%= link_to 'Create a new Room', rooms_new_path %>
+</div>

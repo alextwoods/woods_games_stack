@@ -1,0 +1,638 @@
+Resources:
+  WoodsGamesVpc8E7F1B2C:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/Resource
+  WoodsGamesVpcPublicSubnet1SubnetF78DEBD4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.0.0/18
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1/Subnet
+  WoodsGamesVpcPublicSubnet1RouteTable3F6DAEE3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1/RouteTable
+  WoodsGamesVpcPublicSubnet1RouteTableAssociation1B5BDD67:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPublicSubnet1RouteTable3F6DAEE3
+      SubnetId:
+        Ref: WoodsGamesVpcPublicSubnet1SubnetF78DEBD4
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1/RouteTableAssociation
+  WoodsGamesVpcPublicSubnet1DefaultRoute3698D803:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPublicSubnet1RouteTable3F6DAEE3
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: WoodsGamesVpcIGW04F08002
+    DependsOn:
+      - WoodsGamesVpcVPCGW5988DE8B
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1/DefaultRoute
+  WoodsGamesVpcPublicSubnet1EIP9C692A75:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1/EIP
+  WoodsGamesVpcPublicSubnet1NATGatewayB6D0BD7F:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: WoodsGamesVpcPublicSubnet1SubnetF78DEBD4
+      AllocationId:
+        Fn::GetAtt:
+          - WoodsGamesVpcPublicSubnet1EIP9C692A75
+          - AllocationId
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet1/NATGateway
+  WoodsGamesVpcPublicSubnet2SubnetBBE1DB41:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.64.0/18
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2/Subnet
+  WoodsGamesVpcPublicSubnet2RouteTable39FCA18C:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2/RouteTable
+  WoodsGamesVpcPublicSubnet2RouteTableAssociation67545E4F:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPublicSubnet2RouteTable39FCA18C
+      SubnetId:
+        Ref: WoodsGamesVpcPublicSubnet2SubnetBBE1DB41
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2/RouteTableAssociation
+  WoodsGamesVpcPublicSubnet2DefaultRoute04E2DD3E:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPublicSubnet2RouteTable39FCA18C
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: WoodsGamesVpcIGW04F08002
+    DependsOn:
+      - WoodsGamesVpcVPCGW5988DE8B
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2/DefaultRoute
+  WoodsGamesVpcPublicSubnet2EIPD1968932:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2/EIP
+  WoodsGamesVpcPublicSubnet2NATGateway79F0A1D3:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: WoodsGamesVpcPublicSubnet2SubnetBBE1DB41
+      AllocationId:
+        Fn::GetAtt:
+          - WoodsGamesVpcPublicSubnet2EIPD1968932
+          - AllocationId
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PublicSubnet2/NATGateway
+  WoodsGamesVpcPrivateSubnet1Subnet8BD03EF4:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.128.0/18
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet1
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet1/Subnet
+  WoodsGamesVpcPrivateSubnet1RouteTable71185F77:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet1
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet1/RouteTable
+  WoodsGamesVpcPrivateSubnet1RouteTableAssociationC2598F7A:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPrivateSubnet1RouteTable71185F77
+      SubnetId:
+        Ref: WoodsGamesVpcPrivateSubnet1Subnet8BD03EF4
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet1/RouteTableAssociation
+  WoodsGamesVpcPrivateSubnet1DefaultRoute24724396:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPrivateSubnet1RouteTable71185F77
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: WoodsGamesVpcPublicSubnet1NATGatewayB6D0BD7F
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet1/DefaultRoute
+  WoodsGamesVpcPrivateSubnet2Subnet2EE86AA7:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.192.0/18
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet2
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet2/Subnet
+  WoodsGamesVpcPrivateSubnet2RouteTableC7CBACED:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet2
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet2/RouteTable
+  WoodsGamesVpcPrivateSubnet2RouteTableAssociation908087D2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPrivateSubnet2RouteTableC7CBACED
+      SubnetId:
+        Ref: WoodsGamesVpcPrivateSubnet2Subnet2EE86AA7
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet2/RouteTableAssociation
+  WoodsGamesVpcPrivateSubnet2DefaultRoute8B600EDD:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: WoodsGamesVpcPrivateSubnet2RouteTableC7CBACED
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: WoodsGamesVpcPublicSubnet2NATGateway79F0A1D3
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/PrivateSubnet2/DefaultRoute
+  WoodsGamesVpcIGW04F08002:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: WoodsGamesStack/WoodsGamesVpc
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/IGW
+  WoodsGamesVpcVPCGW5988DE8B:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+      InternetGatewayId:
+        Ref: WoodsGamesVpcIGW04F08002
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesVpc/VPCGW
+  WoodsGamesClusterE00107D4:
+    Type: AWS::ECS::Cluster
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesCluster/Resource
+  WoodsGamesRailsLB9662BC6D:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+        - Key: deletion_protection.enabled
+          Value: "false"
+      Name: WoodsGames
+      Scheme: internet-facing
+      SecurityGroups:
+        - Fn::GetAtt:
+            - WoodsGamesRailsLBSecurityGroupD4F3A8ED
+            - GroupId
+      Subnets:
+        - Ref: WoodsGamesVpcPublicSubnet1SubnetF78DEBD4
+        - Ref: WoodsGamesVpcPublicSubnet2SubnetBBE1DB41
+      Type: application
+    DependsOn:
+      - WoodsGamesVpcPublicSubnet1DefaultRoute3698D803
+      - WoodsGamesVpcPublicSubnet2DefaultRoute04E2DD3E
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/LB/Resource
+  WoodsGamesRailsLBSecurityGroupD4F3A8ED:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatically created Security Group for ELB WoodsGamesStackWoodsGamesRailsLBB88DC7F9
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow from anyone on port 80
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/LB/SecurityGroup/Resource
+  WoodsGamesRailsLBSecurityGrouptoWoodsGamesStackWoodsGamesRailsServiceSecurityGroup92EA411E8095927360:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId:
+        Fn::GetAtt:
+          - WoodsGamesRailsLBSecurityGroupD4F3A8ED
+          - GroupId
+      IpProtocol: tcp
+      Description: Load balancer to target
+      DestinationSecurityGroupId:
+        Fn::GetAtt:
+          - WoodsGamesRailsServiceSecurityGroup51EC55DB
+          - GroupId
+      FromPort: 80
+      ToPort: 80
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/LB/SecurityGroup/to WoodsGamesStackWoodsGamesRailsServiceSecurityGroup92EA411E:80
+  WoodsGamesRailsLBPublicListenerD56D5AD9:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn:
+            Ref: WoodsGamesRailsLBPublicListenerECSGroupE2C4B5F0
+          Type: forward
+      LoadBalancerArn:
+        Ref: WoodsGamesRailsLB9662BC6D
+      Port: 80
+      Protocol: HTTP
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/LB/PublicListener/Resource
+  WoodsGamesRailsLBPublicListenerECSGroupE2C4B5F0:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/LB/PublicListener/ECSGroup/Resource
+  WoodsGamesRailsTaskDefTaskRole1909B7DF:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/TaskDef/TaskRole/Resource
+  WoodsGamesRailsTaskDef4A541120:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Essential: true
+          Image:
+            Fn::Join:
+              - ""
+              - - Ref: AWS::AccountId
+                - .dkr.ecr.
+                - Ref: AWS::Region
+                - "."
+                - Ref: AWS::URLSuffix
+                - /aws-cdk/assets:3c442c5136b4a626d23562053b4c9c4cc17f58ea1d7120dbadf2fb17a474a07b
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Ref: WoodsGamesRailsTaskDefwebLogGroup09129A40
+              awslogs-stream-prefix: WoodsGamesRails
+              awslogs-region:
+                Ref: AWS::Region
+          Name: web
+          PortMappings:
+            - ContainerPort: 80
+              Protocol: tcp
+      Cpu: "512"
+      ExecutionRoleArn:
+        Fn::GetAtt:
+          - WoodsGamesRailsTaskDefExecutionRoleA5779BDB
+          - Arn
+      Family: WoodsGamesStackWoodsGamesRailsTaskDef4D2FDEA9
+      Memory: "2048"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      TaskRoleArn:
+        Fn::GetAtt:
+          - WoodsGamesRailsTaskDefTaskRole1909B7DF
+          - Arn
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/TaskDef/Resource
+  WoodsGamesRailsTaskDefwebLogGroup09129A40:
+    Type: AWS::Logs::LogGroup
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/TaskDef/web/LogGroup/Resource
+  WoodsGamesRailsTaskDefExecutionRoleA5779BDB:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/TaskDef/ExecutionRole/Resource
+  WoodsGamesRailsTaskDefExecutionRoleDefaultPolicy35035554:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+            Effect: Allow
+            Resource:
+              Fn::Join:
+                - ""
+                - - "arn:"
+                  - Ref: AWS::Partition
+                  - ":ecr:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - :repository/aws-cdk/assets
+          - Action: ecr:GetAuthorizationToken
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              Fn::GetAtt:
+                - WoodsGamesRailsTaskDefwebLogGroup09129A40
+                - Arn
+          - Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:Query
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              - dynamodb:ConditionCheckItem
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":dynamodb:"
+                    - Ref: AWS::Region
+                    - ":"
+                    - Ref: AWS::AccountId
+                    - :table/woods-games-rooms
+              - Ref: AWS::NoValue
+        Version: "2012-10-17"
+      PolicyName: WoodsGamesRailsTaskDefExecutionRoleDefaultPolicy35035554
+      Roles:
+        - Ref: WoodsGamesRailsTaskDefExecutionRoleA5779BDB
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/TaskDef/ExecutionRole/DefaultPolicy/Resource
+  WoodsGamesRailsService37EC6A0D:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster:
+        Ref: WoodsGamesClusterE00107D4
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      DesiredCount: 1
+      EnableECSManagedTags: false
+      HealthCheckGracePeriodSeconds: 60
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: web
+          ContainerPort: 80
+          TargetGroupArn:
+            Ref: WoodsGamesRailsLBPublicListenerECSGroupE2C4B5F0
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - Fn::GetAtt:
+                - WoodsGamesRailsServiceSecurityGroup51EC55DB
+                - GroupId
+          Subnets:
+            - Ref: WoodsGamesVpcPrivateSubnet1Subnet8BD03EF4
+            - Ref: WoodsGamesVpcPrivateSubnet2Subnet2EE86AA7
+      TaskDefinition:
+        Ref: WoodsGamesRailsTaskDef4A541120
+    DependsOn:
+      - WoodsGamesRailsLBPublicListenerECSGroupE2C4B5F0
+      - WoodsGamesRailsLBPublicListenerD56D5AD9
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/Service/Service
+  WoodsGamesRailsServiceSecurityGroup51EC55DB:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: WoodsGamesStack/WoodsGamesRails/Service/SecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId:
+        Ref: WoodsGamesVpc8E7F1B2C
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/Service/SecurityGroup/Resource
+  WoodsGamesRailsServiceSecurityGroupfromWoodsGamesStackWoodsGamesRailsLBSecurityGroupC75719D98074A09651:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Load balancer to target
+      FromPort: 80
+      GroupId:
+        Fn::GetAtt:
+          - WoodsGamesRailsServiceSecurityGroup51EC55DB
+          - GroupId
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - WoodsGamesRailsLBSecurityGroupD4F3A8ED
+          - GroupId
+      ToPort: 80
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/WoodsGamesRails/Service/SecurityGroup/from WoodsGamesStackWoodsGamesRailsLBSecurityGroupC75719D9:80
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=1.87.1,@aws-cdk/assets=1.118.0,@aws-cdk/aws-applicationautoscaling=1.118.0,@aws-cdk/aws-autoscaling=1.118.0,@aws-cdk/aws-autoscaling-common=1.118.0,@aws-cdk/aws-autoscaling-hooktargets=1.118.0,@aws-cdk/aws-certificatemanager=1.118.0,@aws-cdk/aws-cloudwatch=1.118.0,@aws-cdk/aws-codeguruprofiler=1.118.0,@aws-cdk/aws-dynamodb=1.118.0,@aws-cdk/aws-ec2=1.118.0,@aws-cdk/aws-ecr=1.118.0,@aws-cdk/aws-ecr-assets=1.118.0,@aws-cdk/aws-ecs=1.118.0,@aws-cdk/aws-ecs-patterns=1.118.0,@aws-cdk/aws-elasticloadbalancingv2=1.118.0,@aws-cdk/aws-events=1.118.0,@aws-cdk/aws-events-targets=1.118.0,@aws-cdk/aws-iam=1.118.0,@aws-cdk/aws-kms=1.118.0,@aws-cdk/aws-lambda=1.118.0,@aws-cdk/aws-logs=1.118.0,@aws-cdk/aws-route53=1.118.0,@aws-cdk/aws-route53-targets=1.118.0,@aws-cdk/aws-s3=1.118.0,@aws-cdk/aws-s3-assets=1.118.0,@aws-cdk/aws-servicediscovery=1.118.0,@aws-cdk/aws-sns=1.118.0,@aws-cdk/aws-sns-subscriptions=1.118.0,@aws-cdk/aws-sqs=1.118.0,@aws-cdk/aws-ssm=1.118.0,@aws-cdk/cloud-assembly-schema=1.118.0,@aws-cdk/core=1.118.0,@aws-cdk/custom-resources=1.118.0,@aws-cdk/cx-api=1.118.0,@aws-cdk/region-info=1.118.0,jsii-runtime=node.js/v15.4.0
+    Metadata:
+      aws:cdk:path: WoodsGamesStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Outputs:
+  WoodsGamesRailsLoadBalancerDNS8728AEA8:
+    Value:
+      Fn::GetAtt:
+        - WoodsGamesRailsLB9662BC6D
+        - DNSName
+  WoodsGamesRailsServiceURL048F6CB3:
+    Value:
+      Fn::Join:
+        - ""
+        - - http://
+          - Fn::GetAtt:
+              - WoodsGamesRailsLB9662BC6D
+              - DNSName
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+

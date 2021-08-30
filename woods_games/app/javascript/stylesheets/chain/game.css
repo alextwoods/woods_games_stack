@@ -1,0 +1,242 @@
+.my-draw {
+
+}
+
+.my-play {
+
+}
+
+.url-copy-box {
+    display: inline-block;
+    width: 80%;
+}
+
+.player {
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+    border-radius: .3em;
+    -moz-box-shadow: .2em .2em .5em #333;
+    -webkit-box-shadow: .2em .2em .5em #333;
+    box-shadow: .2em .2em .5em #333;
+    width: 100%;
+}
+
+.active-player {
+    border: orange;
+    border-width: medium;
+    border-style: solid;
+}
+
+.player-left {
+    width: 120px;
+    border-right: 1px solid black;
+}
+
+.player-right {
+
+}
+
+.player-name {
+    font-weight: bold;
+}
+
+.player-state {
+    font-size: 80%;
+    color: #2E2F30;
+}
+
+.player-space {
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+    border-radius: .3em;
+    -moz-box-shadow: .2em .2em .5em #333;
+    -webkit-box-shadow: .2em .2em .5em #333;
+    box-shadow: .2em .2em .5em #333;
+}
+
+.my-turn {
+    border: orange;
+    border-width: medium;
+    border-style: solid;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+.warning-toast {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    min-width: 200px;
+}
+
+.loading-overlay {
+    position: absolute;
+    top:0px;
+    left:0px;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: .5;
+}
+
+.game-over-overlay {
+    position: absolute;
+    top:0px;
+    left:0px;
+    width: 100%;
+    height: 100%;
+    background: black;
+    background: rgba(255,255,255,.8);
+}
+
+.winner-banner {
+    font-size: 180px;
+    text-transform: uppercase;
+}
+
+.green-team-player {
+    color: green;
+}
+
+.blue-team-player {
+    color: blue;
+}
+
+.red-team-player {
+    color: red;
+}
+
+.board-token {
+    border-radius: 50%;
+    animation: playtoken 4s;
+}
+
+@keyframes playtoken {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 30px rgba(0, 0, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+.board-token-green {
+    background-color: green;
+    color: white;
+}
+
+.board-token-blue {
+    background-color: blue;
+    color: white;
+}
+
+.board-token-red {
+    background-color: red;
+    color: white;
+}
+
+.board {
+    table-layout: fixed;
+    width: 600px;
+    height: 600px;
+}
+
+.board-card {
+    border: 1px solid black;
+    text-align: center;
+    font-size: 26px;
+}
+
+.selected-board-card {
+    border: orange;
+    border-width: medium;
+    border-style: solid;
+    animation: pulse 2s infinite;
+}
+
+.board-card-sequence-green {
+    background-color: lightgreen;
+}
+
+.board-card-sequence-blue {
+    background-color: lightblue;
+}
+
+.board-card-sequence-red {
+    background-color: lightcoral;
+}
+
+.hand-cards {
+    display: inline-flex;
+}
+
+.hand-card-selected {
+    border: orange;
+    border-width: medium;
+    border-style: solid;
+    animation: pulse 2s infinite;
+}
+
+.hand-card {
+    display: inline;
+    border: 1px solid black;
+    font-size: 26px;
+    margin: 5px;
+    padding: 10px;
+}
+
+.card-suit-H {
+    color: red;
+}
+
+.board-token .card-suit-H {
+    color: white;
+}
+
+.card-suit-D {
+    color: red;
+}
+
+.board-token .card-suit-D {
+    color: white;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, .5);
+    box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+.log-wrapper {
+    height: 250px;
+    overflow-y: scroll;
+}
+.game-log-list {
+    list-style-type: none;
+    padding-left: 0px;
+}

@@ -1,0 +1,6 @@
+apple
+orange
+pie
+pizza
+pasta
+bread
