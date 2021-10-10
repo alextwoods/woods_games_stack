@@ -6,6 +6,8 @@ class ZiddlerController < ApplicationController
 
   skip_before_action :verify_authenticity_token
 
+  WORD_LISTS = %w[animals foods holiday]
+
   def create
     room = params.permit('room')['room']
     puts "Creating game for room: #{room}"
@@ -22,6 +24,7 @@ class ZiddlerController < ApplicationController
     puts "Rendering SPA for play"
     @game_path = ziddler_path(@game.id)
     @root_path = root_path
+    @word_lists = WORD_LISTS
     @game.save! # update the updated_at time
   end
 
@@ -97,6 +100,7 @@ class ZiddlerController < ApplicationController
 
   def laydown
     laid_down = laydown_params
+    laid_down[:leftover] ||= []
     @game.laydown(player_cookie, laid_down)
     @game.save!
     render json: @game.to_h
@@ -143,7 +147,7 @@ class ZiddlerController < ApplicationController
   end
 
   def laydown_params
-    params.require(:laydown).permit(:words, :leftover, :discard)
+    params.require(:laydown).permit!
   end
 
   def error_handler(error)

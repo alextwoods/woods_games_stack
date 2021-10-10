@@ -169,7 +169,7 @@ class GameSettings extends React.Component {
                                    event.preventDefault();
                                }}
                         >
-                            <option value={"animals_wordList"}>Animals</option>
+                            <option value={"animals_wordlist"}>Animals</option>
                             <option value={"foods_wordlist"}>Foods</option>
                             <option value={"holiday_wordlist"}>Holiday Words</option>
                         </Input>

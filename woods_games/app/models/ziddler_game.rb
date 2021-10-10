@@ -170,10 +170,10 @@ class ZiddlerGame
     end
 
     # remove zero card words
-    laid_down[:words] = laid_down[:words].select{ |w| w && w.length > 0 }
+    word_cards = laid_down[:words].to_h.values.select{ |w| w && w.length > 0 }
 
     # TODO: validate all cards played were in the hand
-    words = laid_down[:words].map do |cards|
+    words = word_cards.map do |cards|
       points = 0
       word = ""
       cards.each do |card|
@@ -184,11 +184,12 @@ class ZiddlerGame
       {'word' => word, 'points' => points}
     end
     word_score = words.map { |w| w['points'] }.sum
-    leftover_score = laid_down[:leftover].map { |c| data['deck'][c.to_i][1].to_i }.sum
+    leftover = laid_down[:leftover].to_a || []
+    leftover_score = leftover.map { |c| data['deck'][c.to_i][1].to_i }.sum
     score = [word_score - leftover_score, 0].max
 
     table_state['laid_down'][player] = {
-      'cards' => laid_down[:words],
+      'cards' => word_cards,
       'words' => words,
       'leftover' => laid_down[:leftover],
       'score' => [score, 0].max
@@ -212,10 +213,10 @@ class ZiddlerGame
     end
 
     # remove zero card words
-    laid_down['words'] = laid_down['words'].select{ |w| w && w.length > 0 }
+    words = laid_down['words'].to_h.values.select{ |w| w && w.length > 0 }
 
     # TODO: validate all cards played were in the hand
-    words = laid_down['words'].map do |cards|
+    words = words.map do |cards|
       points = 0
       word = ""
       cards.each do |card|
@@ -409,7 +410,7 @@ class ZiddlerGame
 
   def load_wordlist(wl_name)
     puts "Loading wordlist: #{wl_name}"
-    words = File.open("public/#{wl_name}.txt").readlines.map(&:chomp).map(&:upcase)
+    words = File.open("app/assets/images/#{wl_name}.txt").readlines.map(&:chomp).map(&:upcase)
     puts "Loaded: #{words.length} words"
     Set.new(words)
   end

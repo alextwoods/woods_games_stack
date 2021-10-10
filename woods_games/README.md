@@ -24,5 +24,12 @@ the LoadBalancer as output.
 Note: when using a new DDB table, the CDK project needs to be updated to grant access to the taskRole.
 
 ### Current TODOs
-* the ziddler settings are getting strings instead of booleans and failing updates.
+x the ziddler settings are getting strings instead of booleans and failing updates.
 * the ziddler static files were moved into app/assets.  Make sure that they work server side as well.
+
+* Re-enable setInterval to refreshGame data.
+* Create index.html.erb for both games (to support the /ziddler index)
+
+Current problem:
+
+* The drag and drop for discarding does not pick up the deck space.  Trying to log in table.jsx

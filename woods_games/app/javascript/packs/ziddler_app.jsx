@@ -266,7 +266,9 @@ class Ziddler extends React.Component {
         $.ajax({
             url: this.props.gamePath + "/settings",
             type: 'POST',
-            data: {settings: settings},
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({settings: settings}),
             success: (response) => {
                 this.setState({requestState: 'NONE', game: response.data})
             },
@@ -330,7 +332,6 @@ class Ziddler extends React.Component {
     layingDown() {
         const layingDown = {words: this.state.layingDown, leftover: this.state.handOrder, discard: this.state.layingDownDiscard};
 
-        console.log("Calling layignDown: ", layingDown);
         this.setState({requestState: 'REFRESHING'} )
 
         $.ajax({
@@ -343,6 +344,7 @@ class Ziddler extends React.Component {
     }
 
     laydown() {
+        console.log("Called laydown");
         let leftover = this.state.handOrder;
         let discard = this.state.layingDownDiscard;
         if (!discard && leftover.length == 1) {

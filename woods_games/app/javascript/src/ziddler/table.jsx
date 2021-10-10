@@ -119,7 +119,7 @@ export default class Table extends React.Component {
                     </Row>
                     {this.props.game.settings && this.props.game.settings.bonus_words &&
                     <Row>
-                        <a href={window.bonus_wordlist} target='#'>Bonus word list</a>
+                        <a href={window.bonus_wordlists[this.props.game.settings.bonus_words]} target='#'>Bonus word list</a>
                     </Row>
                     }
                 </Container>
@@ -237,18 +237,22 @@ function DeckSpace(props) {
 
 function DroppableDiscard(props) {
     const discardI = props.tempDiscard || props.discard;
+    console.log('Droppable Discard');
+    console.log(props);
     return(
         <span style={{display: "flex"}}>
             <ZCard card={props.deckMap[discardI]} />
             <Droppable droppableId='discardPile' direction="horizontal">
-                {(provided, snapshot) => (
-                    <div
-                        ref={provided.innerRef}
-                        style={getDiscardListStyle(snapshot.isDraggingOver)}>
+                {(provided, snapshot) => {
+                    console.log(provided, snapshot);
+                    return (
+                        <div
+                            ref={provided.innerRef}
+                            style={getDiscardListStyle(snapshot.isDraggingOver)}>
 
-                        {provided.placeholder}
-                    </div>
-                )}
+                            {provided.placeholder}
+                        </div>);
+                }}
             </Droppable>
         </span>
     );
@@ -492,6 +496,8 @@ function RoundSummary(props) {
 
     const players = props.game.players.sort((p1, p2) => props.game.score[p2] - props.game.score[p1]);
     const stats = props.game.stats;
+
+    console.log(tableState.laid_down);
 
     return(
         <Container>

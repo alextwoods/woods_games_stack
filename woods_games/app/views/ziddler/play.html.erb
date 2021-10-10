@@ -5,7 +5,7 @@
     window.notificationPath = "<%= asset_path("notification_bow.mp3") %>"
     window.csw15Path = "<%= asset_path("csw15.txt") %>"
 
-    window.bonus_wordlist = "<%= asset_path("#{@game.data['settings']['bonus_words']}.txt") %>"
+    window.bonus_wordlists = <%== @word_lists.map { |w| [w,asset_path("#{w}_wordlist.txt")] }.to_h.to_json %>
 </script>
 <%= stylesheet_pack_tag 'ziddler_app' %>
 <%= javascript_pack_tag 'ziddler_app' %>
