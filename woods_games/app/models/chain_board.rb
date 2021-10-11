@@ -131,6 +131,16 @@ class ChainBoard
       end
     end
     team_sequences = @sequences.fetch(team, [])
+    # validate sequences do not overlap too much
+    # HACK: its possible to use too many tokens from a previous sequence
+    new_sequences = new_sequences.filter do |new|
+      f = team_sequences.none? { |existing| (existing & new).size > 1 }
+      if f
+        puts "WARNING: got a bad sequenece. filtering it out: #{new}"
+        puts "Existing: #{team_sequences}"
+      end
+      f
+    end
     team_sequences += new_sequences
     @sequences[team] = team_sequences.compact
 

@@ -207,6 +207,30 @@ describe ChainBoard do
     end
   end
 
+  # Try and reproduce a reported bug:
+  # playing on the end of a sequence counts a new one
+  describe '#_sequences_at' do
+    let(:board) { ChainBoard.build_horizontal }
+
+    it 'doesnt count a sequence when played on the end of an existing' do
+      # [F _ R _ X R R _ _ R]
+      # [R R R R]
+      board.set_token(0,1, 'R')
+      board.set_token(0,2, 'R')
+      board.set_token(0,3, 'R')
+
+      # this should be the first horizontal sequence (using free square)
+      new_s = board.new_sequences_at(0, 3, 'R', 4)
+      expect(new_s).to eq [[0,1,2,3]]
+
+
+      board.set_token(0,4, 'R')
+      new_s = board.new_sequences_at(0, 4, 'R', 3)
+      puts new_s
+      puts board
+    end
+  end
+
   describe '#check_new_sequence' do
     let(:seq_len) { 3 }
     let(:team) { 'R' }
