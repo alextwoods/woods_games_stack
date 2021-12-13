@@ -29,7 +29,6 @@ class ZiddlerController < ApplicationController
   end
 
   def show
-    puts "Refreshing game state for: #{player_cookie}"
     render json: @game.to_h
   end
 

@@ -13,7 +13,7 @@ class ZiddlerGame
   map_attr :data
 
   TTL_30_DAYS = 3600 * 24 * 30
-  TTL_30_MINUTES = 60 * 30
+  TTL_2_HOURS = 3600 * 2
 
   # Return a list of Games who match the given room
   def self.where_room(room)
@@ -80,7 +80,7 @@ class ZiddlerGame
     data['table_state'] = {}
     data['round_summaries'] = []
     data['state'] = 'PLAYING'
-    data['deck'] = Deck.standard_deck
+    data['deck'] = ZiddlerDeck.standard_deck
     data['score'] = players.map { |p| [p, 0] }.to_h
     table_state['dealer'] = players.first
     start_round(data['round'])
@@ -231,7 +231,7 @@ class ZiddlerGame
     score = [word_score - leftover_score, 0].max
 
     table_state['laying_down'] = {
-      'cards' => laid_down[:words],
+      'cards' => laid_down[:words].to_h.map { |_k, v| v },
       'words' => words,
       'leftover' => laid_down[:leftover],
       'score' => score
@@ -379,7 +379,7 @@ class ZiddlerGame
     game = ZiddlerGame.new
     game.id = SecureRandom.uuid
     game.room = room || 'NO_ROOM'
-    game.ttl = Time.now.to_i + TTL_30_MINUTES
+    game.ttl = Time.now.to_i + TTL_2_HOURS
     game.data = {
       'players' => [],
       'state' => 'WAITING_FOR_PLAYERS',

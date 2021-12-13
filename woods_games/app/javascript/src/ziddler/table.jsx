@@ -119,7 +119,7 @@ export default class Table extends React.Component {
                     </Row>
                     {this.props.game.settings && this.props.game.settings.bonus_words &&
                     <Row>
-                        <a href={window.bonus_wordlists[this.props.game.settings.bonus_words]} target='#'>Bonus word list</a>
+                        <a href={window.bonus_wordlists[this.props.game.settings.bonus_words]} target='#'>Bonus word list: {this.props.game.settings.bonus_words}</a>
                     </Row>
                     }
                 </Container>
@@ -195,7 +195,7 @@ function DeckSpace(props) {
     const myDraw = myTurn && tableState.turn_state == "WAITING_TO_DRAW";
     const myDiscard = myTurn && tableState.turn_state == "WAITING_TO_DISCARD";
     const lastTurn = !$.isEmptyObject(props.game.table_state.laid_down);
-    const canDiscard = myDiscard && !props.layingDown && !lastTurn;
+    const canDiscard = myDiscard && !props.layingDown;
 
     const myLaydownComplete = lastTurn && !$.isEmptyObject(props.game.table_state.laid_down[props.player]);
 
@@ -237,14 +237,11 @@ function DeckSpace(props) {
 
 function DroppableDiscard(props) {
     const discardI = props.tempDiscard || props.discard;
-    console.log('Droppable Discard');
-    console.log(props);
     return(
         <span style={{display: "flex"}}>
             <ZCard card={props.deckMap[discardI]} />
             <Droppable droppableId='discardPile' direction="horizontal">
                 {(provided, snapshot) => {
-                    console.log(provided, snapshot);
                     return (
                         <div
                             ref={provided.innerRef}
@@ -496,8 +493,6 @@ function RoundSummary(props) {
 
     const players = props.game.players.sort((p1, p2) => props.game.score[p2] - props.game.score[p1]);
     const stats = props.game.stats;
-
-    console.log(tableState.laid_down);
 
     return(
         <Container>

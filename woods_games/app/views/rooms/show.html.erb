@@ -1,48 +1,50 @@
 <title><%= @room.id %> Game Room</title>
-<h1>
-  <%= @room.id %>
-</h1>
+<div class="container">
+  <h1>
+    <%= @room.id %>
+  </h1>
 
-<div>
-  <%= link_to 'Leave Room', rooms_leave_path %>
+  <div>
+    <%= link_to 'Leave Room', rooms_leave_path %>
+  </div>
+
+  <h2> Zequence (Chain game) </h2>
+  <p> Create a new game in this room - everyone with access to this room will be able to join.</p>
+  <form action=<%= chain_index_path %> method="post">
+    <input type="submit" value="Start a game">
+    <input type="hidden" id="game_room" name="room" value=<%= "#{@room.id}" %> />
+  </form>
+  <h3>Joinable Games</h3>
+  <ul>
+    <% @chain_games_joinable.each do |game| %>
+      <li><%= link_to 'Join', play_chain_path(game.id) %> Players: [<%= game.data['players'].join(', ') %>] (Created: <%=  game.updated_at %>).</li>
+    <%end %>
+  </ul>
+  <h3>In Progress/Completed games</h3>
+  <ul>
+    <% @chain_games_other.each do |game| %>
+      <li>State: <%= game.data['state'] %>. Players: <%= game.data['players'].join(', ') %></li>
+    <%end %>
+  </ul>
+
+  <h2>Ziddler</h2>
+  <p> Create a new game in this room - everyone with access to this room will be able to join.</p>
+  <form action=<%= ziddler_index_path %> method="post">
+    <input type="submit" value="Start a game">
+    <input type="hidden" id="game_room" name="room" value=<%= "#{@room.id}" %> />
+  </form>
+  <h3>Joinable Games</h3>
+  <ul>
+    <% @ziddler_games_joinable.each do |game| %>
+      <li><%= link_to 'Join', play_ziddler_path(game.id) %> Players: [<%= game.data['players'].join(', ') %>] (Created: <%=  game.updated_at %>).</li>
+    <%end %>
+  </ul>
+  <h3>In Progress/Completed games</h3>
+  <ul>
+    <% @ziddler_games_other.each do |game| %>
+      <li>State: <%= game.data['state'] %>. Players: <%= game.data['players'].join(', ') %></li>
+    <%end %>
+  </ul>
 </div>
-
-<h2> Zequence (Chain game) </h2>
-<p> Create a new game in this room - everyone with access to this room will be able to join.</p>
-<form action=<%= chain_index_path %> method="post">
-  <input type="submit" value="Start a game">
-  <input type="hidden" id="game_room" name="room" value=<%= "#{@room.id}" %> />
-</form>
-<h3>Joinable Games</h3>
-<ul>
-  <% @chain_games_joinable.each do |game| %>
-    <li><%= link_to 'Join', play_chain_path(game.id) %> Players: [<%= game.data['players'].join(', ') %>] (Created: <%=  game.updated_at %>).</li>
-  <%end %>
-</ul>
-<h3>In Progress/Completed games</h3>
-<ul>
-  <% @chain_games_other.each do |game| %>
-    <li>State: <%= game.data['state'] %>. Players: <%= game.data['players'].join(', ') %></li>
-  <%end %>
-</ul>
-
-<h2>Ziddler</h2>
-<p> Create a new game in this room - everyone with access to this room will be able to join.</p>
-<form action=<%= ziddler_index_path %> method="post">
-  <input type="submit" value="Start a game">
-  <input type="hidden" id="game_room" name="room" value=<%= "#{@room.id}" %> />
-</form>
-<h3>Joinable Games</h3>
-<ul>
-  <% @ziddler_games_joinable.each do |game| %>
-    <li><%= link_to 'Join', play_ziddler_path(game.id) %> Players: [<%= game.data['players'].join(', ') %>] (Created: <%=  game.updated_at %>).</li>
-  <%end %>
-</ul>
-<h3>In Progress/Completed games</h3>
-<ul>
-  <% @ziddler_games_other.each do |game| %>
-    <li>State: <%= game.data['state'] %>. Players: <%= game.data['players'].join(', ') %></li>
-  <%end %>
-</ul>
 
 

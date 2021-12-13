@@ -403,12 +403,22 @@ class Ziddler extends React.Component {
         }
 
         if (source.droppableId == "playerHand" && destination.droppableId == "discardPile") {
-            //remove it from the handOrder
-            const tempDiscard = this.state.handOrder[source.index];
-            const handOrder = remove(this.state.handOrder, source.index );
-            //set a temp discard and update state
-            this.setState({handOrder: handOrder, tempDiscard: parseInt(tempDiscard)});
-            this.discardCard(tempDiscard);
+            //determine if this is a "Ive got nothing" laydown case
+            const lastTurn = !$.isEmptyObject(this.state.game.table_state.laid_down);
+            console.log("last turn: ", lastTurn);
+
+            if (lastTurn) {
+                const handOrder = Array.from(this.state.handOrder);
+                const [cardI] = handOrder.splice(source.index, 1);
+                this.setState({handOrder: handOrder, layingDownDiscard: cardI, layingDown: []}, this.layingDown);
+            } else {
+                //remove it from the handOrder
+                const tempDiscard = this.state.handOrder[source.index];
+                const handOrder = remove(this.state.handOrder, source.index );
+                //set a temp discard and update state
+                this.setState({handOrder: handOrder, tempDiscard: parseInt(tempDiscard)});
+                this.discardCard(tempDiscard);
+            }
         }
 
         if (source.droppableId == "playerHand" && destination.droppableId == "newLaydownWord") {
