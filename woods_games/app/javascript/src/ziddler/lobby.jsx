@@ -169,9 +169,9 @@ class GameSettings extends React.Component {
                                    event.preventDefault();
                                }}
                         >
-                            <option value={"animals_wordlist"}>Animals</option>
-                            <option value={"foods_wordlist"}>Foods</option>
-                            <option value={"holiday_wordlist"}>Holiday Words</option>
+                            <option value={"animals"}>Animals</option>
+                            <option value={"foods"}>Foods</option>
+                            <option value={"holiday"}>Holiday Words</option>
                         </Input>
                     </FormGroup>
                     <FormGroup check>

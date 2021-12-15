@@ -7,10 +7,10 @@ Rails.application.routes.draw do
   post '/rooms/join', to: 'rooms#join'
   get '/rooms/leave', to: 'rooms#leave'
 
-  resources :rooms, except: [:edit, :update, :destroy] do
+  resources :rooms, except: %i[edit update destroy] do
   end
 
-  resources :chain, except: [:edit, :update] do
+  resources :chain, except: %i[edit update] do
     get 'play', on: :member
     post 'player', on: :member
     post 'cpu', on: :member
@@ -24,7 +24,7 @@ Rails.application.routes.draw do
     post 'play', on: :member
   end
 
-  resources :ziddler, except: [:edit, :update] do
+  resources :ziddler, except: %i[edit update] do
     get "play", on: :member
     post "player", on: :member
     post "settings", on: :member
@@ -38,4 +38,7 @@ Rails.application.routes.draw do
     post "discard", on: :member
   end
 
+  resources :word_lists, except: %i[create update] do
+    resources :words, except: %i[show index edit update]
+  end
 end

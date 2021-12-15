@@ -328,9 +328,11 @@ class ZiddlerGame
     end
 
     # compute word list bonuses (if in settings)
-    if (bonus_words = wordlist) #returns nil unless configured
+    if data['settings'] &&
+      data['settings']['enable_bonus_words'] &&
+      (wl_name = data['settings']['bonus_words'])
       table_state["laid_down"].each do |player, x|
-        words = x['words'].map { |w| w['word'] }.select { |w| bonus_words.include? w }
+        words = x['words'].map { |w| w['word'] }.select { |w| !Word.find(id: wl_name, word: w.downcase).nil? }
         if words.length > 0
           puts "PLAYER BONUS! #{player} : #{words.join(', ')}"
           bw_score = 10 * words.size
@@ -388,31 +390,13 @@ class ZiddlerGame
       'round_summaries' => [],
       'settings' => {
         'enable_bonus_words' => true,
-        'bonus_words' => 'animals_wordlist',
+        'bonus_words' => 'animals',
         'longest_word_bonus' => true,
         'most_words_bonus' => false,
         'word_smith_bonus' => true
       }
     }
     game
-  end
-
-  # return Set<String>
-  def wordlist
-    if data['settings'] &&
-      data['settings']['enable_bonus_words'] &&
-      (wl_name = data['settings']['bonus_words'])
-
-      @wordlists ||= {}
-      @wordlists[wl_name] ||= load_wordlist(wl_name)
-    end
-  end
-
-  def load_wordlist(wl_name)
-    puts "Loading wordlist: #{wl_name}"
-    words = File.open("app/assets/images/#{wl_name}.txt").readlines.map(&:chomp).map(&:upcase)
-    puts "Loaded: #{words.length} words"
-    Set.new(words)
   end
 end
 

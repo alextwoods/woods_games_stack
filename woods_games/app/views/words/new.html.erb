@@ -1,0 +1,17 @@
+<div class="container">
+  <h1>New Word</h1>
+
+  <%= form_with(url: word_list_words_path(params[:word_list_id]), method: :post) do |form| %>
+    <div class="field">
+      <%= form.label :word %>
+      <%= form.text_field :word, autofocus: true %>
+    </div>
+
+    <div class="actions">
+      <%= form.submit %>
+    </div>
+  <% end %>
+
+
+  <%= link_to 'Back', edit_word_list_path(params[:word_list_id]) %>
+</div>

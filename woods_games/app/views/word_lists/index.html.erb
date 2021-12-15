@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<div class="container">
+  <h1>Word Lists</h1>
+
+  <table class="table table-striped table-sm" style="width:250px">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th colspan="3"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @word_lists.each do |word_list| %>
+        <tr>
+          <td><%= word_list %></td>
+          <td><%= link_to 'Show', word_list_path(word_list) %></td>
+          <td><%= link_to 'Edit', edit_word_list_path(word_list) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<div class="container">
+  <h1><%= @word_list %></h1>
+  <ul>
+    <% @words.each do |word| %>
+      <li><%= word %></li>
+    <% end %>
+  </ul>
+
+  <%= link_to 'Edit', edit_word_list_path(@word_list) %> |
+  <%= link_to 'Word Lists', word_lists_path %>
+</div>
