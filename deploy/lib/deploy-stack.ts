@@ -38,9 +38,14 @@ export class WoodsGamesStack extends cdk.Stack {
     const roomsTable = ddb.Table.fromTableName(this, 'roomsTable', 'woods-games-rooms');
     const ziddlerTable = ddb.Table.fromTableName(this, 'ziddlerTable', 'woods-games-ziddler');
     const chainTable = ddb.Table.fromTableName(this, 'chainTable', 'woods-games-chain');
+    const wordListTable = ddb.Table.fromTableName(this, 'wordListTable', 'woods-games-wordlist');
 
     roomsTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     ziddlerTable.grantReadWriteData(service.service.taskDefinition.taskRole);
+    chainTable.grantReadWriteData(service.service.taskDefinition.taskRole);
+    wordListTable.grantReadWriteData(service.service.taskDefinition.taskRole);
+
+    // grant permissions to query all indexes
     service.service.taskDefinition.taskRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: ['dynamodb:Query'],

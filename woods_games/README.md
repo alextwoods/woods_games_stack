@@ -50,3 +50,21 @@ x new game at end does not work
 x sort animal word list
 x"I've got nothing" button
 * Bonus - Rethink bonus word lists entirely [they should allow for user management.... maybe voting?]
+
+## Bonus Words designs
+
+Dynamo table with bonus words
+indexing? 
+We need to read all the words for a list at once (why? only to display a page with the words for someone to check)
+so either:
+1. 1 table per word list, then do a read all. PK=word
+2. PK=list_name, SK=word
+
+For scoring - we dont need to load the list into memory - we can query it during each round scoring.
+its a quick/optimized call, 1 per word to check.
+
+How can we add to the list?
+Permissions model?  Voting?
+
+
+And are lists specific to game rooms??
