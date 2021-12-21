@@ -30,7 +30,7 @@ class ZiddlerGame
   def save(opts = {})
     self.created_at = Time.current unless created_at
     self.updated_at = Time.current
-    self.ttl = Time.current
+    self.ttl = Time.current + TTL_2_HOURS
     super opts
   end
 
@@ -191,7 +191,7 @@ class ZiddlerGame
     table_state['laid_down'][player] = {
       'cards' => word_cards,
       'words' => words,
-      'leftover' => laid_down[:leftover],
+      'leftover' => leftover,
       'score' => [score, 0].max
     }
 
@@ -227,13 +227,14 @@ class ZiddlerGame
       {word: word, points: points}
     end
     word_score = words.map { |w| w[:points] }.sum
-    leftover_score = laid_down[:leftover].map { |c| data['deck'][c.to_i][1].to_i }.sum
+    leftover = laid_down[:leftover].to_a || []
+    leftover_score = leftover.map { |c| data['deck'][c.to_i][1].to_i }.sum
     score = [word_score - leftover_score, 0].max
 
     table_state['laying_down'] = {
       'cards' => laid_down[:words].to_h.map { |_k, v| v },
       'words' => words,
-      'leftover' => laid_down[:leftover],
+      'leftover' => leftover,
       'score' => score
     }
   end
@@ -299,7 +300,8 @@ class ZiddlerGame
 
     # compute longest word and most word bonuses (2+ players only)
     longest_words = longest_words(table_state["laid_down"])
-    if players.size >= 2 && data['settings'] && data['settings']['most_words_bonus']
+    if players.size >= 2 && data['settings'] && data['settings']['longest_word_bonus']
+      puts "Computed longest_words: #{longest_words}"
       if (longest_words[0][1] > longest_words[1][1])
         player = longest_words[0][0]
         puts "Longest Word: #{player}"
@@ -344,6 +346,7 @@ class ZiddlerGame
     end
 
     data['round_summaries'] << table_state['laid_down']
+    compute_card_counts
     compute_stats
 
     players.each do |player|
@@ -377,6 +380,28 @@ class ZiddlerGame
     data['stats'] = stats
   end
 
+  def compute_card_counts
+    data['card_counts'] ||= {}
+    cards = table_state['discard']
+    cards += table_state["laid_down"].map { |p, l| l["cards"].flatten + l["leftover"] }.flatten
+    cards = cards.map { |c| data['deck'][c.to_i][0]}
+    cards.each do |c|
+      data['card_counts'][c] = data['card_counts'].fetch(c, 0) + 1
+    end
+
+    data['card_ev'] = {}
+    deck_counts = data["deck"].map { |c| c[0] }.tally
+    n_deck_cards = deck_counts.values.sum
+    cards_played = data['card_counts'].values.sum
+    deck_counts.each do |c, i|
+      data['card_ev'][c] = {
+        p: i.to_f / n_deck_cards.to_f,
+        ev: i.to_f / n_deck_cards.to_f * cards_played,
+        actual: data['card_counts'].fetch(c, 0)
+      }
+    end
+  end
+
   def self.create_fresh(room: nil)
     game = ZiddlerGame.new
     game.id = SecureRandom.uuid
@@ -388,6 +413,7 @@ class ZiddlerGame
       'round' => 0,
       'table_state' => {},
       'round_summaries' => [],
+      'card_counts' => {},
       'settings' => {
         'enable_bonus_words' => true,
         'bonus_words' => 'animals',

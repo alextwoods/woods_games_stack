@@ -108,6 +108,7 @@ class Ziddler extends React.Component {
         this.startNewGame = this.startNewGame.bind(this);
         this.dismissToast = this.dismissToast.bind(this);
         this.turnDingDone = this.turnDingDone.bind(this);
+        this.computeWords = this.computeWords.bind(this);
 
         this.onDragEnd = this.onDragEnd.bind(this);
     }
@@ -306,7 +307,7 @@ class Ziddler extends React.Component {
             url: this.props.gamePath + "/draw",
             type: 'POST',
             data: {draw_type: target},
-            success: (response) => this.setState({requestState: 'NONE', game: response.data, handOrder: this.reconcileHand(response.data)}),
+            success: (response) => this.setState({requestState: 'NONE', game: response.data, handOrder: this.reconcileHand(response.data)}, this.computeWords),
             error: this.onAjaxError
         });
     }
@@ -366,6 +367,8 @@ class Ziddler extends React.Component {
     }
 
     startNextRound() {
+        console.log(this.state.game['card_ev']);
+
         this.setState({requestState: 'ACTING'} )
 
         $.ajax({
@@ -740,6 +743,91 @@ class Ziddler extends React.Component {
 
     dismissToast() {
         this.setState({toast: null});
+    }
+
+    // called after a card is drawn to compute possible word combinations
+    computeWords() {
+        return; //TODO: Disable for now
+
+        console.log("Compute words: ");
+        const deckMap = this.state.game.deck;
+        deckMap.forEach ( (v) => v[1] = parseInt(v[1]));
+
+        const hand = this.state.handOrder.map( cI => parseInt(cI));
+        const wordList = this.state.wordList;
+
+        const results = [];
+        const prune = hand.length > 6;
+
+        const toWord = (cards) => {
+            let word = "";
+            for(let i = 0; i < cards.length; i++) {
+                word += deckMap[cards[i]][0];
+            }
+            return word;
+        }
+
+        const isValidWord = (cards) => {
+            return wordList[toWord(cards)] !== undefined;
+        }
+
+        const evalRes = (wordCards, leftover) => {
+            let sumReduce = (a, b) => a + b;
+            let maxReduce = (a, b) => deckMap[a][1] > deckMap[b][1] ? a : b
+            let words = wordCards.map ( cards => toWord(cards) );
+            let score = wordCards.flat().map( (cI) => deckMap[cI][1] ).reduce( sumReduce, 0 );
+
+            // determine the discard
+            let discardI = leftover.reduce(maxReduce, leftover[0]);
+            let postDiscardLeftover = leftover.filter( (cI) => cI != discardI);
+            score -= postDiscardLeftover.map( (cI) => deckMap[cI][1] ).reduce( sumReduce , 0);
+            return { words: words.sort().join(" "), leftover: toWord(postDiscardLeftover), discard: deckMap[discardI][0], score: score};
+        }
+
+        const splitWords = (hand, words=[]) => {
+            if (hand.length <= 2) {
+                results.push( evalRes(words, hand) );
+            } else {
+                // hand is at least 3, add all words that are 2-(L-1)
+                for(let i = 2; i <= (hand.length-1); i++) {
+                    let cur = hand.slice(); //copy
+                    let new_word = cur.splice(0, i);
+                    if (isValidWord(new_word)) {
+                        splitWords(cur, words.concat( [new_word] ));
+                    }
+                }
+            }
+        }
+
+        const permute = (hand, res = []) => {
+            if (hand.length === 0) {
+                // we have a complete set, evaluate it
+                splitWords(res);
+            } else {
+                for(let i = 0; i < hand.length; i++) {
+                    let cur = hand.slice(); // copy
+
+                    if (!prune || Math.random() > 0.5) {
+                        permute(cur, res.concat(cur.splice(i, 1)));
+                    }
+                }
+            }
+        }
+
+        try {
+            let start = performance.now();
+            permute(hand);
+            // now dedupe and sort the results
+            const res_words = {};
+            results.forEach( (res) => res_words[res.words] = res);
+            let finalRes = Object.values(res_words).sort( (a,b) => b.score - a.score);
+            console.log(finalRes);
+            console.log("Computation took (ms): ", performance.now() - start);
+        } catch (e) {
+            console.log("Failed to compute words: ", e);
+        }
+
+
     }
 
     render() {
