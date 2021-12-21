@@ -7,6 +7,8 @@ Rails.application.routes.draw do
   post '/rooms/join', to: 'rooms#join'
   get '/rooms/leave', to: 'rooms#leave'
 
+  get '/dictionary', to: 'dictionary#index'
+
   resources :rooms, except: %i[edit update destroy] do
   end
 
@@ -41,4 +43,5 @@ Rails.application.routes.draw do
   resources :word_lists, except: %i[create update] do
     resources :words, except: %i[show index edit update]
   end
+
 end

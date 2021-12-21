@@ -122,6 +122,9 @@ export default class Table extends React.Component {
                         <a href={window.bonus_wordlists[this.props.game.settings.bonus_words]} target='#'>Bonus word list: {this.props.game.settings.bonus_words}</a>
                     </Row>
                     }
+                    <Row>
+                        <a href={window.dictionaryPath} target='#'>Ziddler Dictionary</a>
+                    </Row>
                 </Container>
             </DragDropContext>
         );

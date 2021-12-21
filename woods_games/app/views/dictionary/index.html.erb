@@ -1,0 +1,34 @@
+<div class="container">
+  <h1>
+    Ziddler's Official CSW-19 Dictionary
+  </h1>
+
+  <%= form_with(url: dictionary_path, method: :get) do |form| %>
+    <div class="field">
+      <%= form.label :word %>
+      <%= form.text_field :word, autofocus: true %>
+    </div>
+
+    <div class="actions">
+      <%= form.submit('Look up') %>
+    </div>
+  <% end %>
+
+  <% if @definition %>
+    <% if @definition == :not_found %>
+      <p><b><%= @searched_word %></b> not found.</p>
+    <% else %>
+      <h3><%= @definition.word %></h3>
+      <p><%= @definition.def %></p>
+    <% end %>
+  <% end %>
+
+  <hr>
+  <h3>References</h3>
+  <ul>
+    <li><a href="<%= asset_path("csw19.txt") %>" class="link-primary">Complete Ziddler CSW-19 Word list (no definitions, and may be too large for some browsers to search)</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Collins_Scrabble_Words" class="link-primary">Collins Scrabble Words on wikipedia</a></li>
+  </ul>
+</div>
+
+

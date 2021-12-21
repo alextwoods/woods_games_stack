@@ -130,12 +130,12 @@ class Ziddler extends React.Component {
         let needLoad = true;
         if (typeof(Storage) !== "undefined") {
             // Code for localStorage/sessionStorage.
-            const wordData = localStorage.getItem("wordList");
+            const wordData = localStorage.getItem("wordList_csw19");
             if (wordData) {
                 const wordList = {};
                 const words = wordData.split("\n");
                 for (var i = 0; i < words.length; i++) wordList[words[i]] = true;
-                console.log("FROM CACHE.  Loaded CSW15.  Words: ", words.length);
+                console.log("FROM CACHE.  Loaded CSW19.  Words: ", words.length);
                 this.setState({wordList: wordList});
                 needLoad = false;
             }
@@ -145,12 +145,12 @@ class Ziddler extends React.Component {
 
         if (needLoad) {
             $.ajax({
-                url: window.csw15Path, //basePath + "csw15.txt",
+                url: window.csw19Path, //basePath + "csw15.txt",
                 type: 'GET',
                 success: (response) => {
                     if (typeof(Storage) !== "undefined") {
                         try {
-                            localStorage.setItem("wordList", response);
+                            localStorage.setItem("wordList_csw19", response);
                         } catch(err) {
                             console.log("Unable to cache wordlist", err);
                         }
@@ -158,7 +158,7 @@ class Ziddler extends React.Component {
                     const wordList = {};
                     const words = response.split("\n");
                     for (var i = 0; i < words.length; i++) wordList[words[i]] = true;
-                    console.log("Loaded CSW15.  Words: ", words.length);
+                    console.log("Loaded CSW19.  Words: ", words.length);
                     this.setState({wordList: wordList});
                 },
                 error: this.onAjaxError
@@ -747,7 +747,6 @@ class Ziddler extends React.Component {
 
     // called after a card is drawn to compute possible word combinations
     computeWords() {
-        return; //TODO: Disable for now
 
         console.log("Compute words: ");
         const deckMap = this.state.game.deck;
@@ -771,44 +770,18 @@ class Ziddler extends React.Component {
             return wordList[toWord(cards)] !== undefined;
         }
 
-        const evalRes = (wordCards, leftover) => {
-            let sumReduce = (a, b) => a + b;
-            let maxReduce = (a, b) => deckMap[a][1] > deckMap[b][1] ? a : b
-            let words = wordCards.map ( cards => toWord(cards) );
-            let score = wordCards.flat().map( (cI) => deckMap[cI][1] ).reduce( sumReduce, 0 );
-
-            // determine the discard
-            let discardI = leftover.reduce(maxReduce, leftover[0]);
-            let postDiscardLeftover = leftover.filter( (cI) => cI != discardI);
-            score -= postDiscardLeftover.map( (cI) => deckMap[cI][1] ).reduce( sumReduce , 0);
-            return { words: words.sort().join(" "), leftover: toWord(postDiscardLeftover), discard: deckMap[discardI][0], score: score};
-        }
-
-        const splitWords = (hand, words=[]) => {
-            if (hand.length <= 2) {
-                results.push( evalRes(words, hand) );
-            } else {
-                // hand is at least 3, add all words that are 2-(L-1)
-                for(let i = 2; i <= (hand.length-1); i++) {
-                    let cur = hand.slice(); //copy
-                    let new_word = cur.splice(0, i);
-                    if (isValidWord(new_word)) {
-                        splitWords(cur, words.concat( [new_word] ));
-                    }
-                }
-            }
-        }
-
         const permute = (hand, res = []) => {
-            if (hand.length === 0) {
-                // we have a complete set, evaluate it
-                splitWords(res);
-            } else {
+            if (hand.length > 1) {
                 for(let i = 0; i < hand.length; i++) {
                     let cur = hand.slice(); // copy
 
+                    let new_res = res.concat(cur.splice(i, 1));
+                    if (isValidWord(new_res)) {
+                        results.push(toWord(new_res));
+                    }
+
                     if (!prune || Math.random() > 0.5) {
-                        permute(cur, res.concat(cur.splice(i, 1)));
+                        permute(cur, new_res);
                     }
                 }
             }
@@ -819,8 +792,8 @@ class Ziddler extends React.Component {
             permute(hand);
             // now dedupe and sort the results
             const res_words = {};
-            results.forEach( (res) => res_words[res.words] = res);
-            let finalRes = Object.values(res_words).sort( (a,b) => b.score - a.score);
+            results.forEach( (res) => res_words[res] = res);
+            let finalRes = Object.values(res_words).sort( (a,b) => b.length - a.length);
             console.log(finalRes);
             console.log("Computation took (ms): ", performance.now() - start);
         } catch (e) {

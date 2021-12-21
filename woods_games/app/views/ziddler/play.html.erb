@@ -3,8 +3,8 @@
     window.gamePath = "<%= @game_path %>"
     window.rootPath = "<%= @root_path %>"
     window.notificationPath = "<%= asset_path("notification_bow.mp3") %>"
-    window.csw15Path = "<%= asset_path("csw15.txt") %>"
-
+    window.csw19Path = "<%= asset_path("csw19.txt") %>"
+    window.dictionaryPath = "<%= dictionary_path %>"
     window.bonus_wordlists = <%== @word_lists.map { |w| [w, word_list_path(w)] }.to_h.to_json %>
 </script>
 <%= stylesheet_pack_tag 'ziddler_app' %>
