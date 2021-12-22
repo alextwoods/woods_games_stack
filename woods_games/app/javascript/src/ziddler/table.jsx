@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import {Container, Row, Col, Input, FormGroup} from 'reactstrap';
+import {Container, Row, Col, Input, FormGroup, UncontrolledCollapse} from 'reactstrap';
 import { Button } from 'reactstrap';
 import Sound from 'react-sound';
 
@@ -497,6 +497,12 @@ function RoundSummary(props) {
     const players = props.game.players.sort((p1, p2) => props.game.score[p2] - props.game.score[p1]);
     const stats = props.game.stats;
 
+    const cardCounts = Object.keys(props.game.card_ev).map( (ltr) => ({
+        ltr: ltr,
+        ev: parseFloat(props.game.card_ev[ltr].ev),
+        actual: parseInt(props.game.card_ev[ltr].actual)
+    })).sort( (a, b) => (b.actual - b.ev) - (a.actual - a.ev));
+
     return(
         <Container>
             {players.map( (player) =>
@@ -578,6 +584,34 @@ function RoundSummary(props) {
                         )}
                     </ol>
                 </div>
+            </Row>
+            <Row>
+                <div>
+                    <h3>Definitions</h3>
+                    <ul>
+                        {Object.keys(tableState.definitions).map((w) =>
+                            <li key={w}>{w} : {tableState.definitions[w]}</li>
+                        )}
+                    </ul>
+                </div>
+            </Row>
+            <Row>
+                <h3 className="pr-3">Card Counts</h3>
+                <Button
+                    color="secondary"
+                    id="toggler"
+                    outline={true}
+                    size="sm"
+                > Toggle </Button>
+            </Row>
+            <Row>
+                 <UncontrolledCollapse toggler="#toggler">
+                    <ol>
+                        {cardCounts.map((w) =>
+                            <li key={w.ltr}>{w.ltr} : Seen: {w.actual}, expected {w.ev.toFixed(1)}</li>
+                        )}
+                    </ol>
+                </UncontrolledCollapse>
             </Row>
         </Container>
     );

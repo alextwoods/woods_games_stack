@@ -348,6 +348,7 @@ class ZiddlerGame
     data['round_summaries'] << table_state['laid_down']
     compute_card_counts
     compute_stats
+    add_definitions
 
     players.each do |player|
       data['score'][player] = data['score'][player].to_i + table_state['laid_down'][player]['score'].to_i
@@ -399,6 +400,15 @@ class ZiddlerGame
         ev: i.to_f / n_deck_cards.to_f * cards_played,
         actual: data['card_counts'].fetch(c, 0)
       }
+    end
+  end
+
+  def add_definitions
+    table_state['definitions'] = {}
+
+    words = table_state["laid_down"].map { |p, l| l['words'].map { |w| w['word'] } }.flatten
+    words.each do |word|
+      table_state['definitions'][word] = Dictionary.find(word: word.upcase)&.def
     end
   end
 
