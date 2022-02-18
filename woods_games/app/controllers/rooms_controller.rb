@@ -24,6 +24,10 @@ class RoomsController < ApplicationController
     @ziddler_games = ZiddlerGame.where_room(@room.id)
     @ziddler_games_joinable, @ziddler_games_other = @ziddler_games.partition { |g| g.data['state'] == 'WAITING_FOR_PLAYERS' }
 
+    @word_mine_games = WordMineGame.where_room(@room.id)
+    @word_mine_games_joinable, @word_mine_games_other = @word_mine_games.partition { |g| g.data['state'] == 'WAITING_FOR_PLAYERS' }
+
+
   end
 
   # POST /rooms/join

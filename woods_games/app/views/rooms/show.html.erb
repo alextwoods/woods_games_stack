@@ -45,6 +45,25 @@
       <li>State: <%= game.data['state'] %>. Players: <%= game.data['players'].join(', ') %></li>
     <%end %>
   </ul>
+
+  <h2>Word Mine</h2>
+  <p> Create a new game in this room - everyone with access to this room will be able to join.</p>
+  <form action=<%= word_mine_index_path %> method="post">
+    <input type="submit" value="Start a game">
+    <input type="hidden" id="game_room" name="room" value=<%= "#{@room.id}" %> />
+  </form>
+  <h3>Joinable Games</h3>
+  <ul>
+    <% @word_mine_games_joinable.each do |game| %>
+      <li><%= link_to 'Join', play_word_mine_path(game.id) %> Players: [<%= game.data['players'].join(', ') %>] (Created: <%=  game.updated_at %>).</li>
+    <%end %>
+  </ul>
+  <h3>In Progress/Completed games</h3>
+  <ul>
+    <% @word_mine_games_other.each do |game| %>
+      <li>State: <%= game.data['state'] %>. Players: <%= game.data['players'].join(', ') %></li>
+    <%end %>
+  </ul>
 </div>
 
 

@@ -1,0 +1,11 @@
+<script>
+    window.gameId = "<%= @game.id %>";
+    window.gamePath = "<%= @game_path %>"
+    window.rootPath = "<%= @root_path %>"
+    window.notificationPath = "<%= asset_path("notification_bow.mp3") %>"
+    window.csw19Path = "<%= asset_path("csw19.txt") %>"
+    window.dictionaryPath = "<%= dictionary_path %>"
+    window.bonus_wordlists = <%== @word_lists.map { |w| [w, word_list_path(w)] }.to_h.to_json %>
+</script>
+<%= stylesheet_pack_tag 'word_mine_app' %>
+<%= javascript_pack_tag 'word_mine_app' %>

@@ -44,4 +44,17 @@ Rails.application.routes.draw do
     resources :words, except: %i[show index edit update]
   end
 
+  resources :word_mine, except: %i[edit update] do
+    get "play", on: :member
+    post "player", on: :member
+    post "settings", on: :member
+    post "start", on: :member
+    post "newgame", on: :member
+
+    post "draw", on: :member
+    post "shuffle", on: :member
+    post "buy", on: :member
+    post "play_word", on: :member
+  end
+
 end

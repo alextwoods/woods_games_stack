@@ -1,34 +1,32 @@
-class ChainController < ApplicationController
+class WordMineController < ApplicationController
 
   before_action :set_game, except: [:index, :create, :delete]
 
   rescue_from StandardError, with: :error_handler
 
-  # protect_from_forgery with: :null_session
   skip_before_action :verify_authenticity_token
 
   def create
     room = params.permit('room')['room']
     puts "Creating game for room: #{room}"
-    game = ChainGame.create_fresh(room: room)
+    game = WordMineGame.create_fresh(room: room)
     game.save!
-    redirect_to play_chain_path(game.id)
+    redirect_to play_word_mine_path(game.id)
   end
 
   def index
-    @games_path = chain_index_path
+    @games_path = word_mine_index_path
   end
 
-  # Used to render the SPA react app with various paths needed by the frontend.
   def play
     puts "Rendering SPA for play"
-    @game_path = chain_path(@game.id)
+    @game_path = word_mine_path(@game.id)
     @root_path = root_path
+    @word_lists = WordList::BONUS_WORD_LISTS
     @game.save! # update the updated_at time
   end
 
   def show
-    puts "Refreshing game state for: #{player_cookie}"
     render json: @game.to_h
   end
 
@@ -45,24 +43,6 @@ class ChainController < ApplicationController
     # cookies[:player] = player
     @game.save!
     puts "Added player"
-    render json: @game.to_h
-  end
-
-  # Add a CPU player to the game
-  def cpu
-    @game.add_cpu
-    @game.save!
-    puts "Added CPU"
-    render json: @game.to_h
-  end
-
-  # Updates a players team
-  def player_team
-    player_team = player_team_params
-    puts "Update team: #{player_team}"
-    @game.set_player_team(player_team[:player], player_team[:team])
-
-    @game.save!
     render json: @game.to_h
   end
 
@@ -86,33 +66,35 @@ class ChainController < ApplicationController
     render json: @game.to_h
   end
 
-  def play_card
-    p = play_card_params
-    puts "play_card: #{p}"
-    bI = p["boardI"].to_i
-    row = bI / 10
-    col = bI % 10
-    @game.play_card(player_cookie, p['cardI'], row, col)
-
-    @game.save!
-    if @game.next_player_cpu?
-      PlayCpuJob.set(wait: @game.settings['cpu_wait_time'].to_i.seconds).perform_later(@game.id)
-    end
-
-    render json: @game.to_h
-  end
-
-  # Return to the lobby to allow adjustment of settings
+  # Restarts the game as a new game
   def newgame
     @game.new_game
     @game.save!
     render json: @game.to_h
   end
 
-  # start a new game with the same settings
-  def rematch
-    puts "\n\n\nRematch controller...."
-    @game.rematch
+  def draw
+    @game.draw_action(player_cookie)
+    @game.save!
+    render json: @game.to_h
+  end
+
+  def shuffle
+    @game.shuffle_action(player_cookie)
+    @game.save!
+    render json: @game.to_h
+  end
+
+  def buy
+    @game.buy_action(player_cookie, buy_action_params)
+    @game.save!
+    render json: @game.to_h
+  end
+
+  def play_word
+    play_params = play_action_params
+
+    @game.play_action(player_cookie, play_params[:word], play_params[:board_card])
     @game.save!
     render json: @game.to_h
   end
@@ -120,7 +102,7 @@ class ChainController < ApplicationController
   def delete
     # For some reason this does not work.  Use the class method instead
     # @game.delete
-    ChainGame.delete(params[:game_id])
+    WordMineGame.delete(params[:game_id])
     render json: {}
   end
 
@@ -131,28 +113,23 @@ class ChainController < ApplicationController
   end
 
   def set_game
-    @game = ChainGame.find(id: params[:id])
-  end
-
-  def room_params
-    params.require(:game).permit(:room)
+    @game = WordMineGame.find(id: params[:id])
   end
 
   def player_params
     params.require(:player)
   end
 
-  def player_team_params
-    params.require(:player).permit(:player, :team)
-  end
-
   def settings_params
-    params.require(:settings).permit(:board, :sequence_length, :sequences_to_win, :custom_hand_cards)
+    params.require(:settings).permit(:enable_bonus_words, :word_smith_bonus, :bonus_words)
   end
 
+  def buy_action_params
+    params.require(:buy).permit(:card_i, :row, :col)
+  end
 
-  def play_card_params
-    params.require(:play_action).permit(:cardI, :boardI)
+  def play_action_params
+    params.require(:play).permit(:word, :board_card)
   end
 
   def error_handler(error)
