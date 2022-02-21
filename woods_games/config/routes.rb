@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
 
-  resources :stories
+  resources :stories, except: %i[:update] do
+    post 'save', on: :member
+  end
   root 'rooms#index'
 
   # unclear why the below doesn't define this

@@ -1,7 +1,7 @@
 <h1>Editing Content for <%= @story.type == 'today' ? 'pooping.today (stories)' : 'pooping.news (news)' %></h1>
 
 
-<%= form_tag(story_path(@story.id), multipart: true, method: 'PUT', class: "") do %>
+<%= form_tag(save_story_path(@story.id), :multipart => true, class: "") do %>
   <div class="field">
     <%= label_tag "Live Date (YYYY-MM-DD)" %>
     <%= text_field_tag "story[live_date]", (Date.jd(@story.live_date.to_i).to_s if @story.live_date) %>
@@ -10,6 +10,11 @@
   <div class="field">
     <%= label_tag "Title" %>
     <%= text_field_tag "story[title]", @story.title, class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Body" %>
+    <%= rich_text_area "story[body]", "content", value: @story.body %>
   </div>
 
   <div class="actions">
