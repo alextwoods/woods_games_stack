@@ -22,7 +22,6 @@ class StoriesController < ApplicationController
   # POST /stories or /stories.json
   def create
     p = create_story_params.to_h
-    puts p
     @story = Story.new
     @story.id = SecureRandom.uuid
     @story.type = p[:type]
@@ -35,7 +34,7 @@ class StoriesController < ApplicationController
   # PATCH/PUT /stories/1 or /stories/1.json
   def update
     if @story.update(story_params)
-      redirect_to @story, notice: "Story was successfully updated."
+      redirect_to story_path(@story.id), notice: "Story was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -55,7 +54,7 @@ class StoriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def story_params
-      params.require(:story).permit(:id)
+      params.require(:story).permit(:live_date, :title, :body, :prompt, :author_info, :status)
     end
 
     def create_story_params
