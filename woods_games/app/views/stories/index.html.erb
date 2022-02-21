@@ -1,0 +1,61 @@
+<p id="notice"><%= notice %></p>
+
+<%= link_to 'Create new content', new_story_path %>
+
+<h1>Upcoming Stories (pooping.today)</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Live Date</th>
+      <th>Status</th>
+      <th>Author</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @today.each do |story| %>
+      <tr>
+        <td><%= story.title %></td>
+        <td><%= Date.jd(story.live_date.to_i) if story.live_date %></td>
+        <td><%= story.status %></td>
+        <td><%= story.author_info %></td>
+        <td><%= link_to 'Show', story_path(story.id) %></td>
+        <td><%= link_to 'Edit', edit_story_path(story.id) %></td>
+        <td><%= link_to 'Destroy', story_path(story.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<h1>Upcoming News (pooping.news)</h1>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Title</th>
+    <th>Live Date</th>
+    <th>Status</th>
+    <th>Author</th>
+    <th colspan="3"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @news.each do |story| %>
+    <tr>
+      <td><%= story.title %></td>
+      <td><%= Date.jd(story.live_date.to_i) if story.live_date %></td>
+      <td><%= story.status %></td>
+      <td><%= story.author_info %></td>
+      <td><%= link_to 'Show', story %></td>
+      <td><%= link_to 'Edit', edit_story_path(story) %></td>
+      <td><%= link_to 'Destroy', story, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

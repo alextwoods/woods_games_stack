@@ -40,12 +40,14 @@ export class WoodsGamesStack extends cdk.Stack {
     const chainTable = ddb.Table.fromTableName(this, 'chainTable', 'woods-games-chain');
     const wordListTable = ddb.Table.fromTableName(this, 'wordListTable', 'woods-games-wordlist'); 
     const dictTable = ddb.Table.fromTableName(this, 'dictTable', 'woods-games-dictionary'); 
+    const storiesTable = ddb.Table.fromTableName(this, 'storiesTable', 'woods-games-stories'); 
 
     roomsTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     ziddlerTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     chainTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     wordListTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     dictTable.grantReadWriteData(service.service.taskDefinition.taskRole);
+    storiesTable.grantReadWriteData(service.service.taskDefinition.taskRole);
 
 
     // grant permissions to query all indexes
@@ -61,6 +63,14 @@ export class WoodsGamesStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['dynamodb:Query'],
         resources: [`${chainTable.tableArn}/index/*`],
+      }),
+    );
+
+    storiesTable.grantReadWriteData(service.service.taskDefinition.taskRole);
+    service.service.taskDefinition.taskRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['dynamodb:Query'],
+        resources: [`${storiesTable.tableArn}/index/*`],
       }),
     );
   }

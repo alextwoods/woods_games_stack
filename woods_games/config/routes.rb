@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  resources :stories
   root 'rooms#index'
 
   # unclear why the below doesn't define this
