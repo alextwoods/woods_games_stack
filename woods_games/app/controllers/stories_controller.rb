@@ -1,5 +1,7 @@
 class StoriesController < ApplicationController
-  before_action :set_story, only: %i[ show edit save destroy ]
+  before_action :set_story, only: %i[ show edit save destroy generate]
+
+  @@openai = OpenAiClient.new(key: Rails.application.credentials[:openai_key])
 
   # GET /stories or /stories.json
   def index
@@ -26,6 +28,7 @@ class StoriesController < ApplicationController
     @story.id = SecureRandom.uuid
     @story.type = p[:type]
     @story.live_date = Date.parse(p[:live_date]).jd if p[:live_date]
+    @story.status = "draft"
 
     @story.save!
     redirect_to story_path(@story.id), notice: 'Room created!'
@@ -41,7 +44,6 @@ class StoriesController < ApplicationController
     end
 
     if (Hash === update_params['body'])
-      puts "Fixing up body...."
       update_params['body'] = update_params['body']['content']
     end
 
@@ -51,6 +53,26 @@ class StoriesController < ApplicationController
     else
       render :edit, status: :unprocessable_entity
     end
+  end
+
+  def generate
+    generate_params = generate_story_params.to_h.symbolize_keys
+    puts "Generating a new story with: #{generate_params}"
+    generate_params[:temperature] = generate_params[:temperature].to_f if generate_params[:temperature]
+    generate_params[:presence_penalty] = generate_params[:presence_penalty].to_f if generate_params[:presence_penalty]
+    generate_params[:frequency_penalty] = generate_params[:frequency_penalty].to_f if generate_params[:frequency_penalty]
+
+
+    resp = @@openai.complete(**generate_params)
+    generated = resp['choices'].first['text']
+    body = generated.strip.split("\n\n").map { |p| "<p>#{p}</p>"}.join("\n")
+    @story.body = body
+    @story.author_info = "GPT-3/text-davinci-001"
+    @story.prompt = generate_params[:prompt]
+    @story.status = "draft"
+    @story.save!
+    redirect_to edit_story_path(@story.id), notice: "New content was generated"
+
   end
 
   # DELETE /stories/1 or /stories/1.json
@@ -67,12 +89,15 @@ class StoriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def story_params
-      puts params.inspect
-      params.require(:story).permit(:live_date, :title, :prompt, :author_info, :status, body: {})
+      params.require(:story).permit(:live_date, :title, :author_info, :status, body: {})
     end
 
     def create_story_params
       params.require(:story).permit(:type, :live_date)
     end
+
+  def generate_story_params
+    params.require(:generate).permit(:prompt, :temperature, :presence_penalty, :frequency_penalty)
+  end
 end
 

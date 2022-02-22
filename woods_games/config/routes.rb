@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   resources :stories, except: %i[:update] do
     post 'save', on: :member
+    post 'generate', on: :member
   end
   root 'rooms#index'
 

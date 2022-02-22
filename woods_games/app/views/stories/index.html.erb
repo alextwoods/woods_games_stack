@@ -52,9 +52,9 @@
       <td><%= Date.jd(story.live_date.to_i) if story.live_date %></td>
       <td><%= story.status %></td>
       <td><%= story.author_info %></td>
-      <td><%= link_to 'Show', story %></td>
-      <td><%= link_to 'Edit', edit_story_path(story) %></td>
-      <td><%= link_to 'Destroy', story, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <td><%= link_to 'Show', story_path(story.id) %></td>
+      <td><%= link_to 'Edit', edit_story_path(story.id) %></td>
+      <td><%= link_to 'Destroy', story_path(story.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
     </tr>
   <% end %>
   </tbody>
