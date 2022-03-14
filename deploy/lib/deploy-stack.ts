@@ -41,6 +41,8 @@ export class WoodsGamesStack extends cdk.Stack {
     const wordListTable = ddb.Table.fromTableName(this, 'wordListTable', 'woods-games-wordlist'); 
     const dictTable = ddb.Table.fromTableName(this, 'dictTable', 'woods-games-dictionary'); 
     const storiesTable = ddb.Table.fromTableName(this, 'storiesTable', 'woods-games-stories'); 
+    const promptsTable = ddb.Table.fromTableName(this, 'promptsTable', 'woods-games-prompts'); 
+
 
     roomsTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     ziddlerTable.grantReadWriteData(service.service.taskDefinition.taskRole);
@@ -48,7 +50,7 @@ export class WoodsGamesStack extends cdk.Stack {
     wordListTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     dictTable.grantReadWriteData(service.service.taskDefinition.taskRole);
     storiesTable.grantReadWriteData(service.service.taskDefinition.taskRole);
-
+    promptsTable.grantReadWriteData(service.service.taskDefinition.taskRole);
 
     // grant permissions to query all indexes
     service.service.taskDefinition.taskRole.addToPrincipalPolicy(

@@ -9,12 +9,19 @@ class StoriesController < ApplicationController
     @news = Story.upcoming_news
   end
 
+  # GET /stories/archive
+  def archive
+    # TODO: Add some pagination
+    @stories = Story.archive
+  end
+
   # GET /stories/1 or /stories/1.json
   def show
   end
 
   # GET /stories/new
   def new
+    @type = params.permit(:type)["type"] || "news"
   end
 
   # GET /stories/1/edit
@@ -29,9 +36,10 @@ class StoriesController < ApplicationController
     @story.type = p[:type]
     @story.live_date = Date.parse(p[:live_date]).jd if p[:live_date]
     @story.status = "draft"
+    @story.log = [{event: "created", at: Time.current.iso8601, by: 'user'}]
 
     @story.save!
-    redirect_to story_path(@story.id), notice: 'Room created!'
+    redirect_to edit_story_path(@story.id), notice: 'Story created!'
   end
 
   # TODO: this is all messed up.  the put form thing does not work
@@ -48,8 +56,10 @@ class StoriesController < ApplicationController
     end
 
     puts "Updating with: #{update_params}"
-    if @story.update(update_params)
-      redirect_to story_path(@story.id), notice: "Story was successfully updated."
+    updated_fields = @story.set_attrs(update_params)
+    @story.log << [{event: "updated", at: Time.current.iso8601, by: 'user', updated_fields: updated_fields}]
+    if @story.save!
+      redirect_to story_path(@story.id), notice: "Content was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -65,26 +75,37 @@ class StoriesController < ApplicationController
 
     resp = @@openai.complete(**generate_params)
     generated = resp['choices'].first['text']
-    body = generated.strip.split("\n\n").map { |p| "<p>#{p}</p>"}.join("\n")
+    puts generated
+    body = generated.strip.split("\n\n").map { |p| "<div>#{p.gsub("\n", "<br/>")}<br/><br/></div>"}.join("\n")
+    puts "\n---------------\n"
+    puts body
     @story.body = body
     @story.author_info = "GPT-3/text-davinci-001"
     @story.prompt = generate_params[:prompt]
     @story.status = "draft"
+    @story.log << [{event: "generated", at: Time.current.iso8601, by: 'user', prompt: generate_params[:prompt]}]
+
     @story.save!
     redirect_to edit_story_path(@story.id), notice: "New content was generated"
-
   end
 
   # DELETE /stories/1 or /stories/1.json
   def destroy
-    @story.destroy
+    @story.delete! if @story
     redirect_to stories_url, notice: "Story was successfully destroyed."
+  end
+
+  # GET /stories/publish_content_job
+  def publish_content_job
+    job = PublishContentJob.perform_later
+    render json: job
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_story
       @story = Story.find(id: params[:id])
+      @story.log ||= []
     end
 
     # Only allow a list of trusted parameters through.

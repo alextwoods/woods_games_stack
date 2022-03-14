@@ -1,9 +1,5 @@
 Rails.application.routes.draw do
 
-  resources :stories, except: %i[:update] do
-    post 'save', on: :member
-    post 'generate', on: :member
-  end
   root 'rooms#index'
 
   # unclear why the below doesn't define this
@@ -46,6 +42,16 @@ Rails.application.routes.draw do
 
   resources :word_lists, except: %i[create update] do
     resources :words, except: %i[show index edit update]
+  end
+
+  resources :stories, except: %i[:update] do
+    post 'save', on: :member
+    post 'generate', on: :member
+    get 'archive', on: :collection
+    get 'publish_content_job', on: :collection
+  end
+
+  resources :prompts, except: %i[show edit update] do
   end
 
 end

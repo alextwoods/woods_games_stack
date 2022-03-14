@@ -62,3 +62,7 @@ gem "bcrypt", "~> 3.1"
 gem "faraday", "~> 2.2"
 
 gem "bootstrap_form", "~> 5.0"
+
+gem "aws-sdk-s3", "~> 1.101"
+
+gem "aws-sdk-cloudfront", "~> 1.56"

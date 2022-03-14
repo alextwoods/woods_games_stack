@@ -9,7 +9,7 @@
 
   <div class="field">
     <%= label_tag "Status" %>
-    <%= select_tag "story[status]", options_for_select({"Draft" => "draft",  "Published "=> "published" }, @story.status || 'draft') %>
+    <%= select_tag "story[status]", options_for_select({"Draft" => "draft",  "Ready to publish "=> "ready" }, @story.status || 'draft') %>
   </div>
 
   <div class="field">

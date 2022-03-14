@@ -10,7 +10,7 @@ and publish the story later.</p>
 <%= form_tag(stories_path, multipart: true, class: "") do %>
   <div class="field">
     <%= label_tag :type %>
-    <%= select_tag "story[type]", options_for_select({"Story (pooping.today)" => "today",  "News (pooping.news) "=> "news" }, "today") %>
+    <%= select_tag "story[type]", options_for_select({"Story (pooping.today)" => "today",  "News (pooping.news) "=> "news" }, @type) %>
   </div>
 
   <div class="field">
