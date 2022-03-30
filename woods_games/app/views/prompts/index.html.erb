@@ -1,0 +1,52 @@
+
+<h1>Prompts for News (pooping.news)</h1>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Prompt</th>
+    <th>Created</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @news_prompts.each do |prompt| %>
+    <tr>
+      <td><%= prompt.prompt %></td>
+      <td><%= prompt.created_at %></td>
+      <td><%= link_to 'Destroy', prompt_path(prompt.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+<%= link_to 'Create new News Prompt', new_prompt_path({type: 'news'}) %>
+
+<br/>
+<hr/>
+
+
+<h1>Prompts for Today/Stories (pooping.today)</h1>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Prompt</th>
+    <th>Created</th>
+    <th colspan="1"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @today_prompts.each do |prompt| %>
+    <tr>
+      <td><%= prompt.prompt %></td>
+      <td><%= prompt.created_at %></td>
+      <td><%= link_to 'Destroy', prompt_path(prompt.id), method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+
+<%= link_to 'Create new Today(Story) Prompt', new_prompt_path({type: 'today'}) %>

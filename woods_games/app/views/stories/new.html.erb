@@ -1,0 +1,26 @@
+<h1>New Content</h1>
+
+
+
+<p>Select which type of content
+  and the (initial/proposed) date it should be live.
+You can add the content (title/body), use generation, change the live date
+and publish the story later.</p>
+
+<%= form_tag(stories_path, multipart: true, class: "") do %>
+  <div class="field">
+    <%= label_tag :type %>
+    <%= select_tag "story[type]", options_for_select({"Story (pooping.today)" => "today",  "News (pooping.news) "=> "news" }, @type) %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Live Date (YYYY-MM-DD)" %>
+    <%= text_field_tag "story[live_date]" %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag("Submit", class: 'btn btn-primary') %>
+  </div>
+<% end %>
+
+<%= link_to 'Back', stories_path %>

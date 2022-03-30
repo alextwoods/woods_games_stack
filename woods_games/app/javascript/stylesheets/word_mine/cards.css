@@ -1,0 +1,179 @@
+.deck {
+    width: 80px;
+    height: 100px;
+    margin: 0 .5em .5em 0;
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+    border-radius: .3em;
+    -moz-box-shadow: .2em .2em .5em #333;
+    -webkit-box-shadow: .2em .2em .5em #333;
+    box-shadow: .2em .2em .5em #333;
+    background-color: #ccc;
+    background-repeat: repeat;
+    background-image: url(data:image/gif;base64,R0lGODlhJAAkAJEAAOjFsezdztOKbL5QKCH5BAAAAAAALAAAAAAkACQAAAL/HC4RAqm/mmLHyHmAbczB11Ea8ombJKSgKo6Z17pXFznmS1JptiX0z3vVhpEKDoUIkoa0olGIUeZUk1RI6Yn2mh/FDAt6frOrRRTqXPpsVLYugzxaVy+YcBdnoWPZOT0E4eckQtZFZBjWoHixQFWl6Nhol6R2p1Okt5TGaEWZA6fjiMdhZgPHeWrTWGVq+jTZg1HYyAEWKLYzmyiGKoUimilz+YYryyTlg5RcDJSAbNx0Q7lMcbIGEyzTK8zVdfVaImzs/QV+prYqWWW2ObkoOApM/Em/rUlIm7fijs8a2EEKEaZ3AsMUgneEU6RcpJbZ27aGHkAO2Ors8xQH1IR0Bn5YnOtVAAA7); /* image is "Pattern 069" from http://www.squidfingers.com/patterns/ */
+    background-image: -moz-repeating-linear-gradient(34% 6% 135deg,#0F1E59, #75A1BF, #3E3E63 50%);
+    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#3c3), color-stop(0.4, #363), to(#030));
+    /* yes, it's intentional that Mozilla, Webkit, Opera and IE all will get different backgrounds ... why not? :) */
+}
+
+.my-draw .deck:hover {
+    border-style: solid;
+    border-width: medium;
+    border-color: blue;
+    position: relative;
+    top: -10px;
+}
+
+.card {
+    background-color: white;
+    width: 80px;
+    height: 100px;
+    margin: 0 .5em .5em 0;
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+    border-radius: .3em;
+    -moz-box-shadow: .2em .2em .5em #333;
+    -webkit-box-shadow: .2em .2em .5em #333;
+    box-shadow: .2em .2em .5em #333;
+}
+.card:before,
+.card:after {
+    content: attr(value);
+    position: absolute;
+    width: 30px;
+    line-height: 80%;
+    font-size: 100%;
+    text-align: left;
+    letter-spacing: -1px;
+    font-weight: bold;
+}
+.card:before {
+    top: 4px;
+    left: 4px;
+}
+.card:after {
+    bottom: 4px;
+    right: 4px;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.card-number:before,
+.card-number:after {
+    content: attr(value);
+    position: absolute;
+    width: 28px;
+    line-height: 80%;
+    text-align: left;
+    letter-spacing: -1px;
+}
+.card-number:before {
+    top: 21px;
+    left: 4px;
+}
+.card-number:after {
+    bottom: 21px;
+    right: 4px;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.card__inner {
+    box-sizing: border-box;
+    position: absolute;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    top: 20px;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+}
+.card__inner--centered {
+    -webkit-box-pack: center;
+    justify-content: center;
+}
+.card__column {
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+.card__column--centered {
+    -webkit-box-pack: center;
+    justify-content: center;
+}
+.card__symbol {
+    display: inline-block;
+    height: 40px;
+    text-align: center;
+    font-size: 200%;
+    letter-spacing: -2px;
+    margin-left: -2px;
+    color: lightslategrey;
+}
+.card__symbol:before {
+    font-size: 40px;
+    line-height: 40px;
+}
+
+.card-back {
+    width: 80px;
+    height: 100px;
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+    border-radius: .3em;
+    -moz-box-shadow: .2em .2em .5em #333;
+    -webkit-box-shadow: .2em .2em .5em #333;
+    box-shadow: .2em .2em .5em #333;
+    background-color: #ccc;
+    background-repeat: repeat;
+    background-image: url(data:image/gif;base64,R0lGODlhJAAkAJEAAOjFsezdztOKbL5QKCH5BAAAAAAALAAAAAAkACQAAAL/HC4RAqm/mmLHyHmAbczB11Ea8ombJKSgKo6Z17pXFznmS1JptiX0z3vVhpEKDoUIkoa0olGIUeZUk1RI6Yn2mh/FDAt6frOrRRTqXPpsVLYugzxaVy+YcBdnoWPZOT0E4eckQtZFZBjWoHixQFWl6Nhol6R2p1Okt5TGaEWZA6fjiMdhZgPHeWrTWGVq+jTZg1HYyAEWKLYzmyiGKoUimilz+YYryyTlg5RcDJSAbNx0Q7lMcbIGEyzTK8zVdfVaImzs/QV+prYqWWW2ObkoOApM/Em/rUlIm7fijs8a2EEKEaZ3AsMUgneEU6RcpJbZ27aGHkAO2Ors8xQH1IR0Bn5YnOtVAAA7); /* image is "Pattern 069" from http://www.squidfingers.com/patterns/ */
+    background-image: -moz-repeating-linear-gradient(34% 6% 135deg,#0F1E59, #75A1BF, #3E3E63 50%);
+    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#3c3), color-stop(0.4, #363), to(#030));
+    /* yes, it's intentional that Mozilla, Webkit, Opera and IE all will get different backgrounds ... why not? :) */
+}
+
+.my-draw .card:hover {
+    border-style: solid;
+    border-width: medium;
+    border-color: blue;
+    position: relative;
+    top: -10px;
+}
+
+.cards-hand {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.cards-hand .card-back {
+    grid-row-start: 1;
+    grid-column-start: 1;
+}
+
+.cards-small .card-back {
+    transform: scale(0.7);
+    transform-origin: left;
+}
+
+.cards-small .card {
+    transform: scale(0.7);
+    margin: -12px -24px -12px -8px;
+}
+
+.cards-tiny .card {
+    transform: scale(0.4);
+    margin: -24px -20px -24px -30px;
+}
+
+.cards-laydown {
+    padding-left: 25px;
+}

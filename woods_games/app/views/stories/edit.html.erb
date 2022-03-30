@@ -1,0 +1,68 @@
+<h1>Editing Content for <%= @story.type == 'today' ? 'pooping.today (stories)' : 'pooping.news (news)' %></h1>
+
+
+<%= form_tag(save_story_path(@story.id), :multipart => true, class: "") do %>
+  <div class="field">
+    <%= label_tag "Live Date (YYYY-MM-DD)" %>
+    <%= text_field_tag "story[live_date]", (Date.jd(@story.live_date.to_i).to_s if @story.live_date) %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Status" %>
+    <%= select_tag "story[status]", options_for_select({"Draft" => "draft",  "Ready to publish "=> "ready" }, @story.status || 'draft') %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Title" %>
+    <%= text_field_tag "story[title]", @story.title, class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Author" %>
+    <%= text_field_tag "story[author_info]", @story.author_info, class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Body" %>
+    <%= rich_text_area "story[body]", "content", value: @story.body %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag("Submit", class: 'btn btn-primary') %>
+  </div>
+<% end %>
+
+<hr/>
+<h3>GPT-3 story generation</h3>
+
+<%= form_tag(generate_story_path(@story.id), :multipart => true, class: "") do %>
+  <div class="field">
+    <%= label_tag "Prompt" %>
+    <%= text_field_tag "generate[prompt]", @story.prompt || "Write a story:", class: 'form-control' %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "Temperature" %>
+    <%= number_field_tag "generate[temperature]", 0.7, min: 0.0, max: 1.0, step: 0.05 %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "presence_penalty" %>
+    <%= number_field_tag "generate[presence_penalty]", 0.0, min: -2.0, max: 2.0, step: 0.1 %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "frequency_penalty" %>
+    <%= number_field_tag "generate[frequency_penalty]", 0.0, min: -2.0, max: 2.0, step: 0.1 %>
+  </div>
+
+  <div class="actions">
+    <%= submit_tag("Generate", class: 'btn btn-primary') %>
+  </div>
+<% end %>
+
+<%= link_to 'Back', stories_path %>
+
+
+<%= link_to 'Show', story_path(@story.id) %> |
+<%= link_to 'Back', stories_path %>

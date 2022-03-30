@@ -44,6 +44,16 @@ Rails.application.routes.draw do
     resources :words, except: %i[show index edit update]
   end
 
+  resources :stories, except: %i[:update] do
+    post 'save', on: :member
+    post 'generate', on: :member
+    get 'archive', on: :collection
+    get 'publish_content_job', on: :collection
+  end
+
+  resources :prompts, except: %i[show edit update] do
+  end
+
   resources :word_mine, except: %i[edit update] do
     get "play", on: :member
     post "player", on: :member

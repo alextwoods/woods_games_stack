@@ -1,0 +1,6 @@
+<pre>
+  <%= JSON.pretty_generate(@story.to_h) %>
+</pre>
+
+<%= link_to 'Edit', edit_story_path(@story.id) %> |
+<%= link_to 'Back', stories_path %>
