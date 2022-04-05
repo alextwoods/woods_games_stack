@@ -377,7 +377,7 @@ function LaydownTypeBox(props) {
 
     return(
         <Input type="text" name="laydownTypeBox" id="laydownTypeBox"
-               placeholder="laydown" autoComplete="false"
+               placeholder="laydown" autoComplete="off"
                value={words.join(" ")} onChange={props.laydownTypeBoxChange}
         />
     );

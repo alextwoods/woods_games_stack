@@ -11,10 +11,21 @@
     box-shadow: .2em .2em .5em #333;
     background-color: #ccc;
     background-repeat: repeat;
-    background-image: url(data:image/gif;base64,R0lGODlhJAAkAJEAAOjFsezdztOKbL5QKCH5BAAAAAAALAAAAAAkACQAAAL/HC4RAqm/mmLHyHmAbczB11Ea8ombJKSgKo6Z17pXFznmS1JptiX0z3vVhpEKDoUIkoa0olGIUeZUk1RI6Yn2mh/FDAt6frOrRRTqXPpsVLYugzxaVy+YcBdnoWPZOT0E4eckQtZFZBjWoHixQFWl6Nhol6R2p1Okt5TGaEWZA6fjiMdhZgPHeWrTWGVq+jTZg1HYyAEWKLYzmyiGKoUimilz+YYryyTlg5RcDJSAbNx0Q7lMcbIGEyzTK8zVdfVaImzs/QV+prYqWWW2ObkoOApM/Em/rUlIm7fijs8a2EEKEaZ3AsMUgneEU6RcpJbZ27aGHkAO2Ors8xQH1IR0Bn5YnOtVAAA7); /* image is "Pattern 069" from http://www.squidfingers.com/patterns/ */
-    background-image: -moz-repeating-linear-gradient(34% 6% 135deg,#0F1E59, #75A1BF, #3E3E63 50%);
     background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#3c3), color-stop(0.4, #363), to(#030));
     /* yes, it's intentional that Mozilla, Webkit, Opera and IE all will get different backgrounds ... why not? :) */
+}
+
+/* common */
+.deck.deck-0 {
+    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#3c3), color-stop(0.4, #363), to(#030));
+}
+
+.deck.deck-1 {
+    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#0046f8), color-stop(0.4, #324e6b), to(#021342));
+}
+
+.deck.deck-2 {
+    background-image: -webkit-gradient(radial, center center, 20, center center, 80, from(#c01af6), color-stop(0.4, #593366), to(#2a0033));
 }
 
 .my-draw .deck:hover {
@@ -118,9 +129,30 @@
     margin-left: -2px;
     color: lightslategrey;
 }
+.card__symbol.card-rarity-0 {
+    color: #33cc33;
+}
+.card__symbol.card-rarity-1 {
+    color: #0046f8;
+}
+.card__symbol.card-rarity-2 {
+    color: #c01af6;
+}
 .card__symbol:before {
     font-size: 40px;
     line-height: 40px;
+}
+
+.card.selected-card {
+    background-color: #98cffa;
+    margin-right: 30px;
+    animation: pulse 2s infinite;
+}
+
+.card.selected-card.used {
+    background-color: #babbbd;
+    opacity: 0.5;
+    animation: none;
 }
 
 .card-back {

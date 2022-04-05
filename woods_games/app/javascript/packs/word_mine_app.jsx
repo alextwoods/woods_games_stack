@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import 'jquery'
 import { Toast, ToastBody, ToastHeader, Spinner } from 'reactstrap';
+
 import Cookies from 'js-cookie'
 
 import Lobby from '../src/word_mine/lobby'
@@ -79,9 +80,10 @@ class WordMine extends React.Component {
             handOrder: [],
             game: null,
             player: null,
-            tempDiscard: null,
-            layingDown: null,
-            layingDownDiscard: null,
+            playerAction: null,
+            wordBuildCard: null,
+            inProgressWord: null,
+            buildHand: null,
             toast: null,
             playingTurnDing: false
         };
@@ -93,16 +95,19 @@ class WordMine extends React.Component {
         this.updateSettings = this.updateSettings.bind(this);
         this.startGame = this.startGame.bind(this);
         this.drawCard = this.drawCard.bind(this);
-        this.discardCard = this.discardCard.bind(this);
+        this.shuffleDiscard = this.shuffleDiscard.bind(this);
+        this.cancelWordBuild = this.cancelWordBuild.bind(this);
+        this.submitWordBuild = this.submitWordBuild.bind(this);
         this.laydown = this.laydown.bind(this);
-        this.laydownTypeBoxChange = this.laydownTypeBoxChange.bind(this);
+        this.wordBuildTypeBoxChange = this.wordBuildTypeBoxChange.bind(this);
         this.cancelLaydown = this.cancelLaydown.bind(this);
         this.shuffleHand = this.shuffleHand.bind(this);
-        this.startNextRound = this.startNextRound.bind(this);
         this.startNewGame = this.startNewGame.bind(this);
         this.dismissToast = this.dismissToast.bind(this);
         this.turnDingDone = this.turnDingDone.bind(this);
         this.computeWords = this.computeWords.bind(this);
+        this.startWordBuildSelect = this.startWordBuildSelect.bind(this);
+        this.selectWordBuildCard = this.selectWordBuildCard.bind(this);
 
         this.onDragEnd = this.onDragEnd.bind(this);
     }
@@ -189,7 +194,7 @@ class WordMine extends React.Component {
                     if (this.state.game && this.state.game.table_state && game && game.table_state &&
                         this.state.game.table_state.active_player != game.table_state.active_player && game.table_state.active_player == player) {
                         //it is now this players turn
-                        this.setState({playingTurnDing: true});
+                        this.setState({playingTurnDing: true, playerAction: null, wordBuildCard: null, inProgressWord: null});
                     }
                     this.setState({requestState: 'NONE', game: game, player: player, handOrder: this.reconcileHand(game, player)});
                 },
@@ -208,14 +213,13 @@ class WordMine extends React.Component {
         if (player === undefined) {
             player = this.state.player;
         }
-        if (!(player && game.state == "PLAYING" && game.table_state && game.table_state.hands)) {
+        if (!(player && game.state == "PLAYING" && game.table_state)) {
             return [];
         }
-        const allLaidDown = (this.state.layingDown || []).flat();
-        if (this.state.layingDownDiscard) allLaidDown.push(this.state.layingDownDiscard);
-        const hand = game.table_state.hands[player];
+
+        const hand = game.table_state.players_state[player].hand;
         const inBoth = this.state.handOrder.filter((cI) => hand.includes(cI));
-        const newCards = hand.filter((cI) => !this.state.handOrder.includes(cI) && !allLaidDown.includes(cI));
+        const newCards = hand.filter((cI) => !this.state.handOrder.includes(cI));
 
         return inBoth.concat(newCards);
     }
@@ -288,52 +292,34 @@ class WordMine extends React.Component {
         });
     }
 
-    drawCard(target) {
+    drawCard() {
         if (this.state.requestState == "ACTING") {
             console.warn("Action already in progress.  Skipping");
             return;
         }
 
-        console.log("DRAW CARD FROM: ", target);
         this.setState({requestState: 'ACTING'} )
 
         $.ajax({
             url: this.props.gamePath + "/draw",
             type: 'POST',
-            data: {draw_type: target},
             success: (response) => this.setState({requestState: 'NONE', game: response.data, handOrder: this.reconcileHand(response.data)}, this.computeWords),
             error: this.onAjaxError
         });
     }
 
-    discardCard(cI) {
+    shuffleDiscard() {
         if (this.state.requestState == "ACTING") {
             console.warn("Action already in progress.  Skipping");
             return;
         }
 
-        console.log("Discarding card: ", cI);
         this.setState({requestState: 'ACTING'} )
 
         $.ajax({
-            url: this.props.gamePath + "/discard",
+            url: this.props.gamePath + "/shuffle",
             type: 'POST',
-            data: {card: cI},
-            success: (response) => this.setState({requestState: 'NONE', game: response.data, handOrder: this.reconcileHand(response.data), tempDiscard: null }),
-            error: this.onAjaxError
-        });
-    }
-
-    layingDown() {
-        const layingDown = {words: this.state.layingDown, leftover: this.state.handOrder, discard: this.state.layingDownDiscard};
-
-        this.setState({requestState: 'REFRESHING'} )
-
-        $.ajax({
-            url: this.props.gamePath + "/layingdown",
-            type: 'POST',
-            data: {laydown: layingDown},
-            success: (response) => this.setState({requestState: 'NONE'}),
+            success: (response) => this.setState({requestState: 'NONE', game: response.data, handOrder: this.reconcileHand(response.data)}, this.computeWords),
             error: this.onAjaxError
         });
     }
@@ -356,19 +342,6 @@ class WordMine extends React.Component {
             data: {laydown: layingDown},
             success: (response) => this.setState({requestState: 'NONE',
                 game: response.data, layingDown: null, handOrder: [], layingDownDiscard: null}),
-            error: this.onAjaxError
-        });
-    }
-
-    startNextRound() {
-        console.log(this.state.game['card_ev']);
-
-        this.setState({requestState: 'ACTING'} )
-
-        $.ajax({
-            url: this.props.gamePath + "/round",
-            type: 'POST',
-            success: (response) => this.setState({requestState: 'NONE', game: response.data}),
             error: this.onAjaxError
         });
     }
@@ -404,7 +377,49 @@ class WordMine extends React.Component {
         this.setState({playingTurnDing: false});
     }
 
-    laydownTypeBoxChange(event) {
+    startWordBuildSelect() {
+        this.setState({playerAction: "PICKING_WORD_BUILD_CARD", inProgressWord: null} );
+    }
+
+    cancelWordBuild() {
+        this.setState({playerAction: null, inProgressWord: null} );
+    }
+
+    submitWordBuild() {
+        const boardCard = this.state.wordBuildCard;
+        this.setState({requestState: 'ACTING'} );
+
+        const play = {
+            word: this.state.inProgressWord.flat(),
+            board_card: {
+                card_i: boardCard.cardI,
+                row: boardCard.rowI,
+                col: boardCard.colI
+            }
+        };
+
+        $.ajax({
+            url: this.props.gamePath + "/play_word",
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({play: play}),
+            success: (response) => this.setState({requestState: 'NONE',
+                game: response.data, inProgressWord: null, buildHand: null, playerAction: null}),
+            error: this.onAjaxError
+        });
+    }
+
+    selectWordBuildCard(event, cardI, rowI, colI) {
+        console.log("Clicked: ", cardI, rowI, colI);
+        this.setState({
+            playerAction: "BUILDING_WORD",
+            wordBuildCard: {cardI: cardI, rowI: rowI, colI: colI},
+            buildHand: [parseInt(cardI)].concat(this.state.handOrder)
+        });
+
+    }
+
+    wordBuildTypeBoxChange(event) {
         function cardsToWord(cardIndexes, deckMap) {
             let word = "";
             for(let i = 0; i < cardIndexes.length; i++) {
@@ -415,15 +430,13 @@ class WordMine extends React.Component {
 
         //diff the current vs new and take an action based on the difference
         const deckMap = this.state.game.deck;
-        const hand = this.state.handOrder;
-        const layingDown = this.state.layingDown || [];
+        const hand = this.state.buildHand;
+        const layingDown = this.state.inProgressWord || [];
         const words = layingDown.map( (cardLetters) => cardsToWord(cardLetters, deckMap));
         const laydownFlat = layingDown.flat();
         const currentLaydown = words.join(" ");
         const newLaydown = event.target.value.toUpperCase();
-        console.log(laydownFlat);
-        console.log(currentLaydown);
-        console.log(newLaydown);
+        const selectedCardI = this.state.wordBuildCard.cardI;
 
         //two cases - subtraction and addition (ignore copy/paste and replace...)
         if (currentLaydown.length > newLaydown.length) {
@@ -440,25 +453,29 @@ class WordMine extends React.Component {
                         // A Space as deleted! Combine words
                         console.log("SPACE DELETED: wordI: ", wordI);
                         //combine wordI and wordI + 1
-                        let newLayingDown = Array.from(this.state.layingDown);
+                        let newLayingDown = Array.from(this.state.inProgressWord);
                         newLayingDown[wordI] = newLayingDown[wordI].concat( newLayingDown.splice(wordI+1, 1)[0]);
-                        this.setState({layingDown: newLayingDown}, this.layingDown);
+                        this.setState({inProgressWord: newLayingDown});
                         return;
                     }
                 }
-                console.log(cw);
                 if (newLaydown.substr(wI, cw.length) === cw) {
                     console.log(newLaydown.substr(wI, cw.length))
                 } else {
                     console.log("DELETED: ", cw, laydownFlat[lI]);
-                    let newLayingDown = Array.from(this.state.layingDown);
+                    let newLayingDown = Array.from(this.state.inProgressWord);
                     for(var i = 0; i < newLayingDown.length; i++) {
                         for(var j = 0; j < newLayingDown[i].length; j++) {
                             if (newLayingDown[i][j] === laydownFlat[lI]) {
                                 console.log("Removing: ", i, j);
                                 newLayingDown[i] = remove(newLayingDown[i], j);
-                                hand.push(laydownFlat[lI]);
-                                this.setState({layingDown: newLayingDown, handOrder: hand}, this.layingDown);
+                                // if its the selected word build card, put it at the front
+                                if (laydownFlat[lI] === selectedCardI) {
+                                    hand.unshift(laydownFlat[lI]);
+                                } else {
+                                    hand.push(laydownFlat[lI]);
+                                }
+                                this.setState({inProgressWord: newLayingDown, buildHand: hand});
                                 return;
                             }
                         }
@@ -472,9 +489,9 @@ class WordMine extends React.Component {
             if (currentLaydown[currentLaydown.length -1] == " ") {
                 //gotten to the end, the current has a space.  Drop the last (empty) word
                 console.log("Dropping an empty word at the end...");
-                let newLayingDown = Array.from(this.state.layingDown);
+                let newLayingDown = Array.from(this.state.inProgressWord);
                 newLayingDown.splice(newLayingDown.length-1, 1);
-                this.setState({layingDown: newLayingDown}, this.layingDown);
+                this.setState({inProgressWord: newLayingDown});
                 return;
             }
             console.log("Something else went wrong and couldnt find the removed letter");
@@ -489,7 +506,7 @@ class WordMine extends React.Component {
                 if (newLaydown == deckMap[parseInt(hand[i])][0]) {
                     console.log("Found single letter at: ", i);
                     const cI = hand[i];
-                    this.setState({handOrder: remove(hand, i), layingDown: [[cI]]}, this.layingDown );
+                    this.setState({buildHand: remove(hand, i), inProgressWord: [[cI]]});
                     return;
                 }
             }
@@ -499,7 +516,7 @@ class WordMine extends React.Component {
                 if (newLaydown == deckMap[parseInt(hand[i])][0][0]) { //compare only the first letter
                     console.log("Found double letter at: ", i);
                     const cI = hand[i];
-                    this.setState({handOrder: remove(hand, i), layingDown: [[cI]]}, this.layingDown );
+                    this.setState({buildHand: remove(hand, i), inProgressWord: [[cI]]});
                     return;
                 }
             }
@@ -533,19 +550,19 @@ class WordMine extends React.Component {
                 }
                 if (newLaydown[nI] === " ") {
                     console.log("Adding a new word");
-                    let newLayingDown = Array.from(this.state.layingDown);
+                    let newLayingDown = Array.from(this.state.inProgressWord);
 
                     if (nI >= (newLaydown.length - 1)) {
                         //at the end, just add it to the end if there isnt alraedy a blank word
                         if (newLayingDown[newLayingDown.length-1].length > 0) {
                             newLayingDown.push([]);
-                            this.setState({layingDown: newLayingDown}, this.layingDown );
+                            this.setState({inProgressWord: newLayingDown});
                         }
                     } else {
                         //split the word we are in
                         const splitWord = newLayingDown[wordI].splice(letterCI, newLayingDown[wordI].length-letterCI);
                         newLayingDown.splice(wordI+1, 0, splitWord);
-                        this.setState({layingDown: newLayingDown}, this.layingDown );
+                        this.setState({inProgressWord: newLayingDown});
                     }
 
                     return;
@@ -555,9 +572,9 @@ class WordMine extends React.Component {
                         if (newLaydown[nI] == deckMap[parseInt(hand[i])][0]) {
                             const cI = hand[i];
                             console.log("Found single letter at: ", i, cI);
-                            let newLayingDown = Array.from(this.state.layingDown);
+                            let newLayingDown = Array.from(this.state.inProgressWord);
                             newLayingDown[wordI].splice(letterCI, 0, cI);
-                            this.setState({handOrder: remove(hand, i), layingDown: newLayingDown}, this.layingDown );
+                            this.setState({buildHand: remove(hand, i), inProgressWord: newLayingDown});
                             return;
                         }
                     }
@@ -567,9 +584,9 @@ class WordMine extends React.Component {
                         if (newLaydown[nI] == deckMap[parseInt(hand[i])][0][0]) { //compare only the first letter
                             const cI = hand[i];
                             console.log("Found double letter at: ", i, cI);
-                            let newLayingDown = Array.from(this.state.layingDown);
+                            let newLayingDown = Array.from(this.state.inProgressWord);
                             newLayingDown[wordI].splice(letterCI, 0, cI);
-                            this.setState({handOrder: remove(hand, i), layingDown: newLayingDown}, this.layingDown );
+                            this.setState({buildHand: remove(hand, i), layingDown: newLayingDown});
                             return;
                         }
                     }
@@ -584,13 +601,13 @@ class WordMine extends React.Component {
                                 && newLaydown[nI] == cardLetters[1]) {
                                 const cI = hand[i];
                                 console.log("Found AN UPGRADE double letter at: ", i, cI);
-                                let newLayingDown = Array.from(this.state.layingDown);
+                                let newLayingDown = Array.from(this.state.inProgressWord);
 
                                 //move the current letter back to the hand and replace it with the double letter
 
                                 const cardToRemove = newLayingDown[wordI].splice(letterCI-1, 1, cI)[0];
                                 hand.push(cardToRemove);
-                                this.setState({handOrder: remove(hand, i), layingDown: newLayingDown}, this.layingDown);
+                                this.setState({buildHand: remove(hand, i), inProgressWord: newLayingDown});
                                 return;
                             }
                         }
@@ -631,12 +648,13 @@ class WordMine extends React.Component {
         return(
             <div>
                 {this.state.game
-                    ? <Game game={this.state.game} player={this.state.player}
+                    ? <Game game={this.state.game}
+                            player={this.state.player}
+                            playerAction={this.state.playerAction}
+                            wordBuildCard={this.state.wordBuildCard}
                             toast={this.state.toast}
-                            tempDiscard={this.state.tempDiscard}
                             handOrder={this.state.handOrder}
                             layingDown={this.state.layingDown}
-                            layingDownDiscard={this.state.layingDownDiscard}
                             wordList={this.state.wordList}
                             requestState={this.state.requestState}
                             playingTurnDing={this.state.playingTurnDing}
@@ -644,11 +662,17 @@ class WordMine extends React.Component {
                             updateSettings={this.updateSettings}
                             startGame={this.startGame}
                             drawCard={this.drawCard}
-                            laydown={this.laydown}
-                            laydownTypeBoxChange={this.laydownTypeBoxChange}
+                            shuffleDiscard={this.shuffleDiscard}
+                            startWordBuildSelect={this.startWordBuildSelect}
+                            selectWordBuildCard={this.selectWordBuildCard}
+                            inProgressWord={this.state.inProgressWord}
+                            wordBuildTypeBoxChange={this.state.wordBuildTypeBoxChange}
+                            buildHand={this.state.buildHand}
+                            cancelWordBuild={this.cancelWordBuild}
+                            submitWordBuild={this.submitWordBuild}
+                            wordBuildTypeBoxChange={this.wordBuildTypeBoxChange}
                             cancelLaydown={this.cancelLaydown}
                             shuffleHand={this.shuffleHand}
-                            startNextRound={this.startNextRound}
                             startNewGame={this.startNewGame}
                             onDragEnd={this.onDragEnd}
                             dismissToast ={this.dismissToast}

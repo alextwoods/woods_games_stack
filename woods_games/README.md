@@ -41,15 +41,13 @@ This will use the Dockerfile and build the local assets, produce a new image and
 
 Note: when using a new DDB table, the CDK project needs to be updated to grant access to the taskRole.
 
-### Current TODOs
-x Fix formatting of rooms page (center)
-x remove logging of get state (remove log pollution)
+## Current TODOs
+### Word Mine
+* Add colors to cards (based on deck/rarity)
+* Add a game log
 
-Ziddler todos:
-x new game at end does not work
-x sort animal word list
-x"I've got nothing" button
-* Bonus - Rethink bonus word lists entirely [they should allow for user management.... maybe voting?]
+
+
 
 ## Bonus Words designs
 

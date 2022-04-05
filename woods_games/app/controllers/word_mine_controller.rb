@@ -93,6 +93,7 @@ class WordMineController < ApplicationController
 
   def play_word
     play_params = play_action_params
+    puts play_params
 
     @game.play_action(player_cookie, play_params[:word], play_params[:board_card])
     @game.save!
@@ -129,7 +130,7 @@ class WordMineController < ApplicationController
   end
 
   def play_action_params
-    params.require(:play).permit(:word, :board_card)
+    params.require(:play).permit(word: [], board_card: {})
   end
 
   def error_handler(error)
