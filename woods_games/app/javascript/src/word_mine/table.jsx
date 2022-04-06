@@ -84,6 +84,7 @@ export default class Table extends React.Component {
                 <Row className="mt-3">
                     <Col md={3}>
                         {players}
+                        <GameLog log={this.props.game.table_state.log} />
                     </Col>
                     <Col xs="auto">
                         <MineShafts game={this.props.game}
@@ -127,6 +128,30 @@ export default class Table extends React.Component {
             </Container>
         );
     }
+}
+
+
+function GameLog(props) {
+    const logs = props.log.slice(0).reverse();
+    const logEntries = logs.map( (e, i) =>
+        <LogEntry entry={e} key={i}/>
+    );
+    return(
+        <div className={"log-wrapper"}>
+            <ul className={"game-log-list"}>
+                {logEntries}
+            </ul>
+        </div>
+    );
+}
+
+function LogEntry(props) {
+    const e = props.entry;
+    return(
+        <li>
+            [{parseInt(e.turn)}]{e.player} - {e.message}
+        </li>
+    );
 }
 
 function Player(props) {

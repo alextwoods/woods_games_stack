@@ -43,7 +43,7 @@ Note: when using a new DDB table, the CDK project needs to be updated to grant a
 
 ## Current TODOs
 ### Word Mine
-* Add colors to cards (based on deck/rarity)
+x Add colors to cards (based on deck/rarity)
 * Add a game log
 
 

@@ -100,6 +100,7 @@ class WordMineGame
     table_state['active_player'] = next_player(table_state['dealer'])
     table_state['turn_state'] = 'WAITING_TO_PLAY'
     table_state['turn'] = 1
+    table_state['log'] = []
     start_turn
   end
 
@@ -126,9 +127,11 @@ class WordMineGame
       player_state['hand'] += player_state['deck'].pop(1)
     elsif player_state['discard'].size > 0
       # shuffle the discard into the deck
+      table_state['log'] << {type: 'DRAW_SHUFFLE', player: player, time: Time.current.to_i, turn: turn, message: 'Shuffling the discard into the deck'}
       player_state['deck'] = player_state['discard'].pop(player_state['discard'].size).shuffle
       player_state['hand'] += player_state['deck'].pop(1)
     else
+      table_state['log'] << {type: 'INFO', player: player, time: Time.current.to_i, turn: turn, message: 'Not enough cards to draw from.'}
       puts "WARNING: Insufficent cards to draw from.  Skipping."
     end
 
@@ -144,6 +147,7 @@ class WordMineGame
 
     draw(player, 2)
     player_state['actions'] -= 1
+    table_state['log'] << {type: 'ACTION_DRAW', player: player, time: Time.current.to_i, turn: turn, message: 'Drew 2 cards from their deck'}
 
     check_end_of_turn(player)
   end
@@ -196,8 +200,15 @@ class WordMineGame
       points += deck_card[1].to_i
       word_letters << deck_card[0]
     end
-    player_state['played'] << { word: word_letters, cards: word, score: points }
-    player_state['score'] = player_state['score'] .to_i + points
+    player_state['played'] << { word: word_letters, cards: word, score: points, board_card: board_card }
+    player_state['score'] = player_state['score'].to_i + points
+
+    table_state['log'] << {type: 'ACTION_BUILD_WORD',
+                           time: Time.current.to_i, player: player, turn: turn,
+                           word_cards: word, score: points, word: word_letters,
+                           board_card: board_card,
+                           message: "Played #{word_letters} for #{points} points - used #{data['deck'][board_card['card_i']][0]} from the board"}
+
 
     check_end_of_turn(player)
   end
@@ -246,91 +257,13 @@ class WordMineGame
     player_state['deck'] = (player_state['deck'] + player_state['discard']).shuffle
     player_state['discard'] = []
     player_state['actions'] -= 1
+    table_state['log'] << {type: 'ACTION_SHUFFLE', time: Time.current.to_i, player: player, turn: turn, message: 'Shuffled discard into their deck.'}
+
     check_end_of_turn(player)
   end
 
-
-
-  #laid_down:
-  #     {
-  #       words: [ [cid, cid], [cid] ]
-  #       leftover: [ cids ]
-  #       discard: cid  #required single card
-  #     }
-  def laydown(player, laid_down)
-    validate_turn(player)
-    unless table_state['turn_state'] == 'WAITING_TO_DISCARD'
-      raise "Cannot laydown, turn state: #{table_state['turn_state']}"
-    end
-
-    # remove zero card words
-    word_cards = laid_down[:words].to_h.values.select{ |w| w && w.length > 0 }
-
-    # TODO: validate all cards played were in the hand
-    words = word_cards.map do |cards|
-      points = 0
-      word = ""
-      cards.each do |card|
-        deck_card = data['deck'][card.to_i]
-        points += deck_card[1].to_i
-        word << deck_card[0]
-      end
-      {'word' => word, 'points' => points}
-    end
-    word_score = words.map { |w| w['points'] }.sum
-    leftover = laid_down[:leftover].to_a || []
-    leftover_score = leftover.map { |c| data['deck'][c.to_i][1].to_i }.sum
-    score = [word_score - leftover_score, 0].max
-
-    table_state['laid_down'][player] = {
-      'cards' => word_cards,
-      'words' => words,
-      'leftover' => leftover,
-      'score' => [score, 0].max
-    }
-
-    table_state['hands'][player] = []
-    table_state['discard'] << laid_down[:discard]
-
-    next_turn(player)
-  end
-
-  def laying_down(player, laid_down)
-    validate_turn(player)
-    unless table_state['turn_state'] == 'WAITING_TO_DISCARD'
-      raise "Cannot laydown, turn state: #{table_state['turn_state']}"
-    end
-
-    if laid_down['words'].blank?
-      table_state['laying_down'] = nil
-      return
-    end
-
-    # remove zero card words
-    words = laid_down['words'].to_h.values.select{ |w| w && w.length > 0 }
-
-    # TODO: validate all cards played were in the hand
-    words = words.map do |cards|
-      points = 0
-      word = ""
-      cards.each do |card|
-        card = card.to_i
-        points += data['deck'][card][1].to_i
-        word << data['deck'][card][0]
-      end
-      {word: word, points: points}
-    end
-    word_score = words.map { |w| w[:points] }.sum
-    leftover = laid_down[:leftover].to_a || []
-    leftover_score = leftover.map { |c| data['deck'][c.to_i][1].to_i }.sum
-    score = [word_score - leftover_score, 0].max
-
-    table_state['laying_down'] = {
-      'cards' => laid_down[:words].to_h.map { |_k, v| v },
-      'words' => words,
-      'leftover' => leftover,
-      'score' => score
-    }
+  def turn
+    table_state['turn'].to_i
   end
 
   def next_turn(player)

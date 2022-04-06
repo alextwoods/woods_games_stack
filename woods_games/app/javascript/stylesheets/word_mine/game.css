@@ -135,3 +135,14 @@
     background: black;
     opacity: .5;
 }
+
+.log-wrapper {
+    font-size: x-small;
+    height: 250px;
+    overflow-y: scroll;
+    margin-top: 15px;
+}
+.game-log-list {
+    list-style-type: none;
+    padding-left: 0px;
+}
