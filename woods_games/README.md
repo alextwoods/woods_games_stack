@@ -6,11 +6,13 @@ yarn add <package>
 ## Docker/Deployment
 Running in `us-west-1`.
 
+Running locally:
 ```
 rails s
 ./bin/webpack-dev-server
 ```
 
+To build the docker image and run locally(not required during deploy)
 ```
 docker build -t rails_games .
 
@@ -29,8 +31,8 @@ It will build the Dockerfile from this directory, which packages all changes - i
 the LoadBalancer as output.
 
 
-
-Ensure Docker Desktop is running (required for cdk deploy to build the docker image)
+Ensure Docker Desktop is running (required for cdk deploy to build the docker image).
+Do NOT need to run a rails compile or anything else, just do the cdk deploy below.
 
 Then from deploy:
 ```shell
@@ -44,7 +46,7 @@ Note: when using a new DDB table, the CDK project needs to be updated to grant a
 ## Current TODOs
 ### Word Mine
 x Add colors to cards (based on deck/rarity)
-* Add a game log
+x Add a game log
 
 
 
